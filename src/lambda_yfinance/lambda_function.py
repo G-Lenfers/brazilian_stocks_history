@@ -1,11 +1,12 @@
-"""File for getting brazilian stocks through yfinance package."""
-import pandas as pd
+"""File for getting brazilian stocks through yfinance package and uploading to postgresql."""
+import os
+
 import yfinance as yf
 from sqlalchemy import create_engine
 
 
 def lambda_handler(event: any) -> None:
-    """Main function."""
+    """Handle the event and call the appropriate methods."""
     stocks = event.get("stocks")
     for stock in stocks:
 
@@ -25,7 +26,7 @@ def _download_ticker_information(stock):
 
 
 def _transform_dataframe(dataframe):
-    """Insert docstring here."""
+    """Reorder and rename columns."""
     # Date index to column
     dataframe.reset_index(inplace=True)
 
@@ -34,12 +35,13 @@ def _transform_dataframe(dataframe):
     dataframe = dataframe[selected_columns]
 
     # Rename columns (postgres treat uppercase as a special character)
-    dataframe.rename(str.lower, axis='columns', inplace=True)
+    dataframe = dataframe.rename(str.lower, axis='columns')
 
     return dataframe
 
+
 def _load_data_into_postgres(dataframe, stock):
-    """Insert docstring here."""
+    """Load dataframe to postgresql."""
     postgres_engine = _connect_to_database()
     dataframe.to_sql(
         name=stock.lower(),
@@ -49,6 +51,24 @@ def _load_data_into_postgres(dataframe, stock):
         index=False,
         chunksize=1000
     )
+
+
+def _connect_to_database():
+    """Connect to Postgres server."""
+    # Engine connection parameters
+    dialect = 'postgresql'
+    driver = 'psycopg2'
+
+    # Database credentials
+    host = os.environ['SQL_HOST']
+    port = os.environ['SQL_PORT']
+    user = os.environ['SQL_USER']
+    password = os.environ['SQL_PASS']
+    database = os.environ['SQL_DB']
+
+    engine = create_engine(f"{dialect}+{driver}://{user}:{password}@{host}:{port}/{database}")
+
+    return engine
 
 
 if __name__ == "__main__":
