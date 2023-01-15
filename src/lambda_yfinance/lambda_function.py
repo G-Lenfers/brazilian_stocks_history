@@ -11,9 +11,15 @@ def lambda_handler(event: any) -> None:
     stocks = event.get("stocks")
     for stock in stocks:
 
-        history_dataframe = yf.download(tickers=stock, period='max', ignore_tz=True)
+        # Extract
+        extracted_history = _download_ticker_information(stock=stock)
         history_dataframe.reset_index(inplace=True)
         history_dataframe = history_dataframe[selected_columns]
+
+
+def _download_ticker_information(stock):
+    """Get ticker information from yahoo API."""
+    return yf.download(tickers=stock, period='max', ignore_tz=True)
 
 
 if __name__ == "__main__":
