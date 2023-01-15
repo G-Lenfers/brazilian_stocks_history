@@ -26,16 +26,20 @@ def _download_ticker_information(stock):
 
 
 def _transform_dataframe(dataframe):
-    """Reorder and rename columns."""
+    """Reorder, rename, and round columns."""
     # Date index to column
     dataframe.reset_index(inplace=True)
 
-    # Order columns
+    # Select specific columns and order them
     selected_columns = ['Date', 'Open', 'Close', 'High', 'Low', 'Volume']
     dataframe = dataframe[selected_columns]
 
     # Rename columns (postgres treat uppercase as a special character)
     dataframe = dataframe.rename(str.lower, axis='columns')
+
+    # Round values
+    columns_to_round = ['open', 'close', 'high', 'low']
+    dataframe[columns_to_round] = dataframe[columns_to_round].round(4)
 
     return dataframe
 
