@@ -15,6 +15,9 @@ def lambda_handler(event: any) -> None:
         # Transform
         history_dataframe = _transform_dataframe(dataframe=extracted_history)
 
+        # Load
+        _load_data_into_postgres(dataframe=history_dataframe, stock=stock)
+
 
 def _download_ticker_information(stock):
     """Get ticker information from yahoo API."""
@@ -34,6 +37,19 @@ def _transform_dataframe(dataframe):
     dataframe.rename(str.lower, axis='columns', inplace=True)
 
     return dataframe
+
+def _load_data_into_postgres(dataframe, stock):
+    """Insert docstring here."""
+    postgres_engine = _connect_to_database()
+    dataframe.to_sql(
+        name=stock.lower(),
+        con=postgres_engine,
+        schema='yahoo_finance',
+        if_exists='append',
+        index=False,
+        chunksize=1000
+    )
+
 
 if __name__ == "__main__":
     event = {
