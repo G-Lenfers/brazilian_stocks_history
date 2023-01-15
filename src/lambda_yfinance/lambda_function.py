@@ -44,7 +44,7 @@ def _load_data_into_postgres(dataframe, stock):
     """Load dataframe to postgresql."""
     postgres_engine = _connect_to_database()
     dataframe.to_sql(
-        name=stock.lower(),
+        name=stock.lower().replace('.', '_'),
         con=postgres_engine,
         schema='yahoo_finance',
         if_exists='append',
