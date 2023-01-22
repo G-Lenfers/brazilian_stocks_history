@@ -1,12 +1,16 @@
 """File for getting brazilian stocks through yfinance package and uploading to postgresql."""
-import os
-
+import pandas as pd
 import yfinance as yf
-from sqlalchemy import create_engine
+
+from shared.databases import PostgresConnector
 
 
 def lambda_handler(event: any) -> None:
     """Handle the event and call the appropriate methods."""
+    # Instance postgres connection
+    postgres = PostgresConnector(schema='yahoo_finance')
+
+    # Cycle through received stocks
     stocks = event.get("stocks")
     for stock in stocks:
 
@@ -17,15 +21,17 @@ def lambda_handler(event: any) -> None:
         history_dataframe = _transform_dataframe(dataframe=extracted_history)
 
         # Load
-        _load_data_into_postgres(dataframe=history_dataframe, stock=stock)
+        _load_data_into_postgres(postgres=postgres, dataframe=history_dataframe, stock=stock)
+
+    postgres.close_connections()
 
 
-def _download_ticker_information(stock):
+def _download_ticker_information(stock: str) -> pd.DataFrame:
     """Get ticker information from yahoo API."""
     return yf.download(tickers=stock, period='max', ignore_tz=True)
 
 
-def _transform_dataframe(dataframe):
+def _transform_dataframe(dataframe: pd.DataFrame) -> pd.DataFrame:
     """Reorder, rename, and round columns."""
     # Date index to column
     dataframe.reset_index(inplace=True)
@@ -44,35 +50,9 @@ def _transform_dataframe(dataframe):
     return dataframe
 
 
-def _load_data_into_postgres(dataframe, stock):
+def _load_data_into_postgres(postgres: PostgresConnector, dataframe: pd.DataFrame, stock: str) -> None:
     """Load dataframe to postgresql."""
-    postgres_engine = _connect_to_database()
-    dataframe.to_sql(
-        name=stock.lower().replace('.', '_'),
-        con=postgres_engine,
-        schema='yahoo_finance',
-        if_exists='append',
-        index=False,
-        chunksize=1000
-    )
-
-
-def _connect_to_database():
-    """Connect to Postgres server."""
-    # Engine connection parameters
-    dialect = 'postgresql'
-    driver = 'psycopg2'
-
-    # Database credentials
-    host = os.environ['SQL_HOST']
-    port = os.environ['SQL_PORT']
-    user = os.environ['SQL_USER']
-    password = os.environ['SQL_PASS']
-    database = os.environ['SQL_DB']
-
-    engine = create_engine(f"{dialect}+{driver}://{user}:{password}@{host}:{port}/{database}")
-
-    return engine
+    postgres.upload_data(dataframe=dataframe, stock=stock)
 
 
 if __name__ == "__main__":
