@@ -2,10 +2,10 @@
 import os
 from typing import TYPE_CHECKING
 
-import sqlalchemy.engine.base
 from sqlalchemy import create_engine
 
 if TYPE_CHECKING:
+    import sqlalchemy.engine.base
     import pandas as pd
 
 
@@ -32,7 +32,9 @@ class PostgresConnector:
     def _connect_to_database(self) -> sqlalchemy.engine.base.Engine:
         """Connect to Postgres server."""
         return create_engine(
-            f"{self.dialect}+{self.driver}://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}"
+            f"{self.dialect}+{self.driver}://"
+            f"{self.user}:{self.password}@"
+            f"{self.host}:{self.port}/{self.database}"
         )
 
     @staticmethod
