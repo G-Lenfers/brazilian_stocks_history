@@ -149,9 +149,6 @@ class B3HistoryExtractorEngine:
 
         return dataframe
 
-    def upload_data(self):  # rather than defining here, just call from postgres
-        pass
-
     def _get_last_iteration_from_postgres(self):
         pass
 
