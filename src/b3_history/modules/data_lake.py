@@ -119,14 +119,7 @@ class B3HistoryExtractorEngine:
             return dataframe
 
     def transform_dataframe(self, dataframe: pd.DataFrame) -> pd.DataFrame:
-        """
-        Apply many dataframe transformations.
-
-        Remove header and footer rows
-        Eliminate whitespaces
-        Convert currency values to float
-        Convert date string to date format
-        """
+        """Apply many dataframe transformations."""
         # Exclude file header
         header_filter = dataframe['data_pregao'] != "COTAHIST"
         dataframe = dataframe[header_filter]
