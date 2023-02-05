@@ -1,0 +1,7 @@
+numpy==1.24.1
+pandas==1.5.2
+psycopg2==2.9.5
+SQLAlchemy==1.4.46
+yfinance==0.2.3
+flake8==6.0.0
+isort==5.11.4
