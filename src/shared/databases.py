@@ -2,10 +2,10 @@
 import os
 from typing import TYPE_CHECKING
 
+import sqlalchemy.engine.base
 from sqlalchemy import create_engine
 
 if TYPE_CHECKING:
-    import sqlalchemy.engine.base
     import pandas as pd
 
 
