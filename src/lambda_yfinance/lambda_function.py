@@ -2,7 +2,7 @@
 import pandas as pd
 import yfinance as yf
 
-from shared.databases import PostgresConnector
+from src.shared.databases import PostgresConnector
 
 
 def lambda_handler(event: any) -> None:
