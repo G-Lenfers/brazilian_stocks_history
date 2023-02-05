@@ -39,6 +39,7 @@ class PostgresConnector:
 
     def upload_data(self, dataframe: 'pd.DataFrame', table_name: str) -> None:
         """Use pandas to_sql method and sqlalchemy engine to send data to postgres."""
+        print("Uploading data to postgres...")
         dataframe.to_sql(
             name=table_name,
             con=self.engine,
