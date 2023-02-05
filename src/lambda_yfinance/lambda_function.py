@@ -52,7 +52,15 @@ def _transform_dataframe(dataframe: pd.DataFrame) -> pd.DataFrame:
 
 def _load_data_into_postgres(postgres: PostgresConnector, dataframe: pd.DataFrame, stock: str) -> None:
     """Load dataframe to postgresql."""
-    postgres.upload_data(dataframe=dataframe, stock=stock)
+    postgres.upload_data(
+        dataframe=dataframe,
+        table_name=_format_ticker_name(stock=stock)
+    )
+
+
+def _format_ticker_name(stock: str) -> str:
+    """Lowercase the ticker name, and replace its dot to underline."""
+    return stock.lower().replace('.', '_')
 
 
 if __name__ == "__main__":

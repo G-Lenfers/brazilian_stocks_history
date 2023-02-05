@@ -37,15 +37,10 @@ class PostgresConnector:
             f"{self.host}:{self.port}/{self.database}"
         )
 
-    @staticmethod
-    def _format_ticker_name(stock: str) -> str:
-        """Lowercase the ticker name, and replace its dot to underline."""
-        return stock.lower().replace('.', '_')
-
-    def upload_data(self, dataframe: 'pd.DataFrame', stock: str) -> None:
+    def upload_data(self, dataframe: 'pd.DataFrame', table_name: str) -> None:
         """Use pandas to_sql method and sqlalchemy engine to send data to postgres."""
         dataframe.to_sql(
-            name=self._format_ticker_name(stock=stock),
+            name=table_name,
             con=self.engine,
             schema=self.schema,
             if_exists='append',
