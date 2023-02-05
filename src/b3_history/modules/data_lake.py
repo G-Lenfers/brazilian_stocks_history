@@ -1,8 +1,10 @@
 """File for extracting data from B3 history files, transforming, and uploading to postgres datalake"""
+from datetime import datetime
 import os
 import zipfile
 from io import TextIOWrapper
 
+import numpy as np
 import pandas as pd
 
 from src.shared.databases import PostgresConnector
@@ -10,7 +12,8 @@ from src.shared.databases import PostgresConnector
 ROOT_PATH = os.path.abspath(  # return the absolute path of the following
     os.path.join(  # concatenate the directory of the following
         __file__,  # path of current execution file
-        os.pardir  # parent directory string
+        os.pardir,  # parent directory of this file
+        os.pardir  # parent directory of modules
     )
 )
 RESOURCES_PATH = '/resources/'
@@ -49,7 +52,7 @@ class B3HistoryExtractorEngine:
             'codigo_papel_isin': slice(230, 242),
             'numero_distribuicao_papel': slice(242, 245)
         }
-        self.has_more = False
+        self.has_more = True
         self.last_iteration = 0
         self.postgres = PostgresConnector(schema="b3_history")
 
@@ -58,6 +61,27 @@ class B3HistoryExtractorEngine:
 
     def set_last_iteration(self, value: int) -> None:
         self.last_iteration = value
+
+    def run_etl(self) -> None:
+        """Run main ETL method."""
+        self._get_last_iteration_from_postgres()
+        while self.has_more:
+
+            # Extract
+            extracted_dataframe = self.read_and_extract_data_from_file()
+
+            # Transform
+            transformed_dataframe = self.transform_dataframe(
+                dataframe=extracted_dataframe
+            )
+
+            # Load
+            self.postgres.upload_data(
+                dataframe=transformed_dataframe,
+                table_name=self.file_name.split('.')[0].lower()
+            )
+
+        self.postgres.close_connections()
 
     def read_and_extract_data_from_file(self) -> pd.DataFrame:
         """Unzip, read, and store data into pandas dataframe."""
@@ -94,10 +118,48 @@ class B3HistoryExtractorEngine:
             self.set_has_more(value=False)
             return dataframe
 
-    def transform_dataframe(self):
-        pass
+    def transform_dataframe(self, dataframe: pd.DataFrame) -> pd.DataFrame:
+        """
+        Apply many dataframe transformations.
+
+        Remove header and footer rows
+        Eliminate whitespaces
+        Convert currency values to float
+        Convert date string to date format
+        """
+        # Exclude file header
+        header_filter = dataframe['data_pregao'] != "COTAHIST"
+        dataframe = dataframe[header_filter]
+
+        # Remove whitespaces
+        dataframe = dataframe.apply(self._remove_whitespaces)
+
+        # Convert date string to date format
+        date_columns = ["data_pregao", "data_vencimento_opcoes"]
+        dataframe[date_columns] = dataframe[date_columns].applymap(self._format_dates)
+
+        # Format prices
+        price_columns = [
+            'preco_abertura_pregao',
+            'preco_maximo_pregao',
+            'preco_minimo_pregao',
+            'preco_medio_pregao',
+            'preco_ultimo_negocio',
+            'preco_melhor_oferta_compra',
+            'preco_melhor_oferta_venda',
+            'preco_exercicio_opcoes',
+            'preco_exercicio_pontos_opcoes'
+        ]
+        dataframe[price_columns] = dataframe[price_columns].applymap(self._format_price_values)
+
+        # TODO transform int values
+
+        return dataframe
 
     def upload_data(self):  # rather than defining here, just call from postgres
+        pass
+
+    def _get_last_iteration_from_postgres(self):
         pass
 
     def _open_zipped_file(self):
@@ -140,3 +202,17 @@ class B3HistoryExtractorEngine:
             'codigo_papel_isin': text_line[self.slice_collection['codigo_papel_isin']],
             'numero_distribuicao_papel': text_line[self.slice_collection['numero_distribuicao_papel']]
         }
+
+    @staticmethod
+    def _remove_whitespaces(series: pd.Series) -> pd.Series:
+        return series.str.rstrip().replace(r'^\s*$', np.nan, regex=True)
+
+    @staticmethod
+    def _format_dates(cell: str) -> datetime.date:
+        date_format = "%Y%m%d"  # date example: 20230228
+        return datetime.strptime(cell, date_format).date()
+
+    @staticmethod
+    def _format_price_values(cell: str) -> float:
+        return round(int(cell)/100, 2)
+
