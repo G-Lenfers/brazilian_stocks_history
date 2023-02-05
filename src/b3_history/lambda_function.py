@@ -127,7 +127,9 @@ class B3HistoryExtractorEngine:
             'preco_melhor_oferta_compra': text_line[self.slice_collection['preco_melhor_oferta_compra']],
             'preco_melhor_oferta_venda': text_line[self.slice_collection['preco_melhor_oferta_venda']],
             'numero_negocios_efetuados': text_line[self.slice_collection['numero_negocios_efetuados']],
-            'quantidade_total_titulos_negociados': text_line[self.slice_collection['quantidade_total_titulos_negociados']],
+            'quantidade_total_titulos_negociados': text_line[
+                self.slice_collection['quantidade_total_titulos_negociados']
+            ],
             'preco_exercicio_opcoes': text_line[self.slice_collection['preco_exercicio_opcoes']],
             'indicador_correcao_precos': text_line[self.slice_collection['indicador_correcao_precos']],
             'data_vencimento_opcoes': text_line[self.slice_collection['data_vencimento_opcoes']],
