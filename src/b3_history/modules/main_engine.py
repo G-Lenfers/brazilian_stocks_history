@@ -29,8 +29,8 @@ class B3HistoryExtractorEngine:
         self._file_total_lines = 0
 
         # Extraction properties
-        self.last_line_read = 0
         self._has_more = True
+        self._last_line_read = 0
         self.columns_separator = {
             'tipo_de_registro': slice(0, 2),
             'data_pregao': slice(2, 10),
@@ -100,10 +100,24 @@ class B3HistoryExtractorEngine:
         if not isinstance(value, bool):
             raise TypeError("Property has_more should be of type boolean.")
 
-        self.has_more = value
+        self._has_more = value
 
-    def set_last_iteration(self, value: int) -> None:
-        self.last_iteration = value
+    @property
+    def last_line_read(self):
+        """Access attribute value."""
+        return self._last_line_read
+
+    @last_line_read.setter
+    def last_line_read(self, value):
+        """"""
+        if not isinstance(value, int):
+            raise TypeError("Property last_line_read should be of type integer.")
+
+        if value < 0:
+            raise ValueError("Property last_line_read should not be negative.")
+
+        self._last_line_read = value
+
 
     def run_etl(self) -> None:
         """Run main ETL method."""
