@@ -153,7 +153,7 @@ class B3HistoryExtractorEngine:
 
             for i, text_line in enumerate(file):
 
-                if i < self.last_line_read:
+                if i < (self.last_line_read - 1):
                     continue
 
                 separated_columns = self.separate_columns(text_line=text_line)
@@ -171,12 +171,12 @@ class B3HistoryExtractorEngine:
 
                 if i != 0 and i % 100 == 0:  # TODO remember to revert this parameter to default
                     print(f"i: {i}. Finished reading 10000 lines.")
-                    self.set_last_iteration(value=i+1)
-                    self.set_has_more(value=True)
+                    self.last_line_read = i + 1
+                    self.has_more = True
                     return dataframe
 
             print(f"Reached the end of file {self.file_name}.")
-            self.set_has_more(value=False)
+            self.has_more = False
             return dataframe
 
     def transform_dataframe(self, dataframe: pd.DataFrame) -> pd.DataFrame:
