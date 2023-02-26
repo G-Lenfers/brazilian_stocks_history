@@ -53,7 +53,7 @@ class B3HistoryExtractorEngine:
             'numero_distribuicao_papel': slice(242, 245)
         }
         self.has_more = True
-        self.last_iteration = 0
+        self.last_line_read = 0
         self.postgres = PostgresConnector(schema="b3_history")
 
     @property
@@ -68,6 +68,7 @@ class B3HistoryExtractorEngine:
         else:
             raise TypeError("Invalid file_name. Please, check your event list")
 
+    # TODO change these set methods
     def set_has_more(self, value: bool) -> None:
         self.has_more = value
 
@@ -103,7 +104,7 @@ class B3HistoryExtractorEngine:
 
             for i, text_line in enumerate(file):
 
-                if i < self.last_iteration:
+                if i < self.last_line_read:
                     continue
 
                 sliced_text_line = self._slice_text_data(text_line=text_line)
@@ -179,6 +180,7 @@ class B3HistoryExtractorEngine:
         return dataframe
 
     def _get_last_iteration_from_postgres(self):
+        # TODO upload_health_check
         pass
 
     def _open_zipped_file(self):
