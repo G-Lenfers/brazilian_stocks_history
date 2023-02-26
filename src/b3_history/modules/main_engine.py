@@ -64,12 +64,12 @@ class B3HistoryExtractorEngine:
         self.postgres = PostgresConnector(schema="b3_history")  # TODO create engine before upload and dispose it rigth after
 
     @property
-    def file_name(self):
+    def file_name(self) -> str:
         """Access attribute value."""
         return self._file_name
 
     @file_name.setter
-    def file_name(self, new_file_name):
+    def file_name(self, new_file_name: str) -> None:
         """Define property setter and validate inputted file name."""
         if not isinstance(new_file_name, str):
             raise TypeError("Invalid file_name. Please, check your event list")
@@ -80,12 +80,12 @@ class B3HistoryExtractorEngine:
         self._file_name = new_file_name
 
     @property
-    def total_lines(self):
+    def total_lines(self) -> int:
         """Access attribute value."""
         return self._file_total_lines
 
     @total_lines.setter
-    def total_lines(self, value):
+    def total_lines(self, value: int) -> None:
         """Define property setter and validate input."""
         if not isinstance(value, int):
             raise TypeError("Property file_total_lines should be of type integer, "
@@ -96,12 +96,12 @@ class B3HistoryExtractorEngine:
         self._file_total_lines = value
 
     @property
-    def has_more(self):
+    def has_more(self) -> bool:
         """Access attribute value."""
         return self._has_more
 
     @has_more.setter
-    def has_more(self, value):
+    def has_more(self, value: bool) -> None:
         """Define property setter and validate input."""
         if not isinstance(value, bool):
             raise TypeError("Property has_more should be of type boolean.")
@@ -109,12 +109,12 @@ class B3HistoryExtractorEngine:
         self._has_more = value
 
     @property
-    def last_line_read(self):
+    def last_line_read(self) -> int:
         """Access attribute value."""
         return self._last_line_read
 
     @last_line_read.setter
-    def last_line_read(self, value):
+    def last_line_read(self, value: int) -> None:
         """Define property setter and validate input."""
         if not isinstance(value, int):
             raise TypeError("Property last_line_read should be of type integer.")
@@ -123,7 +123,6 @@ class B3HistoryExtractorEngine:
             raise ValueError("Property last_line_read should not be negative.")
 
         self._last_line_read = value
-
 
     def run_etl(self) -> None:
         """Run main ETL method."""
