@@ -23,13 +23,14 @@ class B3HistoryExtractorEngine:
     """Main class for reading zipped file, transform the dataframe and upload data to postgres."""
 
     def __init__(self):
+        """Initialize constructor."""
         # File handling properties
         self._file_name = None
         self._file_total_lines = 0
-        self.last_line_read = 0
 
         # Extraction properties
-        self.has_more = True
+        self.last_line_read = 0
+        self._has_more = True
         self.columns_separator = {
             'tipo_de_registro': slice(0, 2),
             'data_pregao': slice(2, 10),
@@ -58,6 +59,8 @@ class B3HistoryExtractorEngine:
             'codigo_papel_isin': slice(230, 242),
             'numero_distribuicao_papel': slice(242, 245)
         }
+
+        # Upload engine
         self.postgres = PostgresConnector(schema="b3_history")  # TODO create engine before upload and dispose it rigth after
 
     @property
@@ -81,14 +84,22 @@ class B3HistoryExtractorEngine:
     @total_lines.setter
     def total_lines(self, value):
         """Define property setter and validate input."""
-        if isinstance(value, int) and value > 0:
+        if isinstance(value, int) and value > 0:  # TODO errors first
             self._file_total_lines = value
         else:
             raise ValueError("Total number of lines should be an integer and must not be negative.")
 
+    @property
+    def has_more(self):
+        """Access attribute value."""
+        return self._has_more
 
-    # TODO change these set methods
-    def set_has_more(self, value: bool) -> None:
+    @has_more.setter
+    def has_more(self, value):
+        """Define property setter and validate input."""
+        if not isinstance(value, bool):
+            raise TypeError("Property has_more should be of type boolean.")
+
         self.has_more = value
 
     def set_last_iteration(self, value: int) -> None:
