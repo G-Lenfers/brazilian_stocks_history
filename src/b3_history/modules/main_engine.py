@@ -71,10 +71,13 @@ class B3HistoryExtractorEngine:
     @file_name.setter
     def file_name(self, new_file_name):
         """Define property setter and validate inputted file name."""
-        if isinstance(new_file_name, str) and ".zip" in new_file_name:
-            self._file_name = new_file_name
-        else:
+        if not isinstance(new_file_name, str):
             raise TypeError("Invalid file_name. Please, check your event list")
+
+        if ".zip" not in new_file_name:
+            raise ValueError(f"Expected extension .zip, got {new_file_name[-4:]} instead.")
+
+        self._file_name = new_file_name
 
     @property
     def total_lines(self):
@@ -84,10 +87,13 @@ class B3HistoryExtractorEngine:
     @total_lines.setter
     def total_lines(self, value):
         """Define property setter and validate input."""
-        if isinstance(value, int) and value > 0:  # TODO errors first
-            self._file_total_lines = value
-        else:
-            raise ValueError("Total number of lines should be an integer and must not be negative.")
+        if not isinstance(value, int):
+            raise TypeError("Property file_total_lines should be of type integer, "
+                            f"got {type(value)} instead.")
+        if value < 0:
+            raise ValueError("Total number of lines must not be negative.")
+
+        self._file_total_lines = value
 
     @property
     def has_more(self):
@@ -109,7 +115,7 @@ class B3HistoryExtractorEngine:
 
     @last_line_read.setter
     def last_line_read(self, value):
-        """"""
+        """Define property setter and validate input."""
         if not isinstance(value, int):
             raise TypeError("Property last_line_read should be of type integer.")
 
