@@ -147,7 +147,7 @@ class B3HistoryExtractorEngine:
 
     def read_and_extract_data_from_file(self) -> pd.DataFrame:
         """Unzip, read, and store data into pandas dataframe."""
-        with self._open_zipped_file() as file:
+        with _open_zipped_file(file_name=self.file_name) as file:
 
             dataframe = pd.DataFrame()
 
@@ -230,7 +230,7 @@ class B3HistoryExtractorEngine:
     def get_file_total_lines(self):
         """Quickly read file and get its total number of lines."""
         # Open compressed file
-        with self._open_zipped_file() as file:
+        with _open_zipped_file(file_name=self.file_name) as file:
 
             # Iterate over lines
             for i, _ in enumerate(file):
@@ -243,16 +243,6 @@ class B3HistoryExtractorEngine:
     def _get_last_iteration_from_postgres(self):
         # TODO upload_health_check
         pass
-
-    def _open_zipped_file(self):
-        """Open zipped file and read it in non-binary mode."""
-        zipped_file = ROOT_PATH + RESOURCES_PATH + self.file_name
-        with zipfile.ZipFile(zipped_file, 'r') as my_zip:
-            return TextIOWrapper(
-                my_zip.open(
-                    my_zip.namelist()[0]
-                )
-            )
 
     def separate_columns(self, text_line) -> dict:
         """Slice text data and separate content appropriately."""
@@ -303,3 +293,13 @@ class B3HistoryExtractorEngine:
     def _format_quantity_values(cell: str) -> int:
         return int(cell)
 
+
+def _open_zipped_file(file_name: str):
+    """Open zipped file and read it in non-binary mode."""
+    zipped_file = ROOT_PATH + RESOURCES_PATH + file_name
+    with zipfile.ZipFile(zipped_file, 'r') as my_zip:
+        return TextIOWrapper(
+            my_zip.open(
+                my_zip.namelist()[0]
+            )
+        )
