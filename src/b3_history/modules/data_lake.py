@@ -24,6 +24,7 @@ class B3HistoryExtractorEngine:
 
     def __init__(self):
         self._file_name = None
+        self._file_total_lines = 0
         self.slice_collection = {
             'tipo_de_registro': slice(0, 2),
             'data_pregao': slice(2, 10),
@@ -54,10 +55,11 @@ class B3HistoryExtractorEngine:
         }
         self.has_more = True
         self.last_line_read = 0
-        self.postgres = PostgresConnector(schema="b3_history")
+        self.postgres = PostgresConnector(schema="b3_history")  # TODO create engine before upload and dispose it rigth after
 
     @property
     def file_name(self):
+        """Access attribute value."""
         return self._file_name
 
     @file_name.setter
@@ -67,6 +69,20 @@ class B3HistoryExtractorEngine:
             self._file_name = new_file_name
         else:
             raise TypeError("Invalid file_name. Please, check your event list")
+
+    @property
+    def total_lines(self):
+        """Access attribute value."""
+        return self._file_total_lines
+
+    @total_lines.setter
+    def total_lines(self, value):
+        """Define property setter and validate input."""
+        if isinstance(value, int) and value > 0:
+            self._file_total_lines = value
+        else:
+            raise ValueError("Total number of lines should be an integer and must not be negative.")
+
 
     # TODO change these set methods
     def set_has_more(self, value: bool) -> None:
@@ -178,6 +194,19 @@ class B3HistoryExtractorEngine:
         dataframe[integer_colummns] = dataframe[integer_colummns].applymap(self._format_quantity_values)
 
         return dataframe
+
+    def get_file_total_lines(self):
+        """Quickly read file and get its total number of lines."""
+        # Open compressed file
+        with self._open_zipped_file() as file:
+
+            # Iterate over lines
+            for i, _ in enumerate(file):
+                pass
+
+        # Save into class property
+        print(f"Raw total lines: {i}")
+        return i + 1  # Enumerate starts at zero
 
     def _get_last_iteration_from_postgres(self):
         # TODO upload_health_check
