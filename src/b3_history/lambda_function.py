@@ -3,8 +3,10 @@ from src.b3_history.modules.data_lake import B3HistoryExtractorEngine
 
 
 def lambda_handler(event: any) -> None:
+    """"""
+    engine = B3HistoryExtractorEngine()
     for file in event.get('files_to_run'):
-        engine = B3HistoryExtractorEngine(file_name=file)
+        engine.file_name = file
         engine.run_etl()
     pass
 

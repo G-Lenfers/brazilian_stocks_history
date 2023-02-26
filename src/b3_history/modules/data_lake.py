@@ -22,8 +22,8 @@ RESOURCES_PATH = '/resources/'
 class B3HistoryExtractorEngine:
     """Main class for reading zipped file, transform the dataframe and upload data to postgres."""
 
-    def __init__(self, file_name):
-        self.file_name = file_name
+    def __init__(self):
+        self._file_name = None
         self.slice_collection = {
             'tipo_de_registro': slice(0, 2),
             'data_pregao': slice(2, 10),
@@ -55,6 +55,18 @@ class B3HistoryExtractorEngine:
         self.has_more = True
         self.last_iteration = 0
         self.postgres = PostgresConnector(schema="b3_history")
+
+    @property
+    def file_name(self):
+        return self._file_name
+
+    @file_name.setter
+    def file_name(self, new_file_name):
+        """Define property setter and validate inputted file name."""
+        if isinstance(new_file_name, str) and ".zip" in new_file_name:
+            self._file_name = new_file_name
+        else:
+            raise TypeError("Invalid file_name. Please, check your event list")
 
     def set_has_more(self, value: bool) -> None:
         self.has_more = value
