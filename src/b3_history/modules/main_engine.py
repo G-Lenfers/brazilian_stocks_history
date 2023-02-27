@@ -19,11 +19,11 @@ ROOT_PATH = os.path.abspath(  # return the absolute path of the following
 RESOURCES_PATH = '/resources/'
 
 
-class MainEngine:
-    """Main class for reading zipped file, transform the dataframe and upload data to postgres."""
+class ExtractionEngine:
+    """"""
 
     def __init__(self):
-        """Initialize constructor."""
+        """Initialize the constructor."""
         # File handling properties
         self._file_name = None
         self._file_total_lines = 0
@@ -59,9 +59,6 @@ class MainEngine:
             'codigo_papel_isin': slice(230, 242),
             'numero_distribuicao_papel': slice(242, 245)
         }
-
-        # Upload engine
-        self.postgres = PostgresConnector(schema="b3_history")  # TODO create engine before upload and dispose it rigth after
 
     @property
     def file_name(self) -> str:
@@ -123,6 +120,17 @@ class MainEngine:
             raise ValueError("Property last_line_read should not be negative.")
 
         self._last_line_read = value
+
+
+class MainEngine(ExtractionEngine):
+    """Main class for reading zipped file, transform the dataframe and upload data to postgres."""
+
+    def __init__(self):
+        """Initialize constructor."""
+        super().__init__()
+
+        # Upload engine
+        self.postgres = PostgresConnector(schema="b3_history")  # TODO create engine before upload and dispose it rigth after
 
     def run_etl(self) -> None:
         """Run main ETL method."""
