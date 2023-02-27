@@ -27,7 +27,7 @@ class PostgresConnector:
         # Engine connection parameters
         self.dialect = 'postgresql'
         self.driver = 'psycopg2'
-        self.engine = self._connect_to_database()
+        self.engine = None
 
     def _connect_to_database(self) -> sqlalchemy.engine.base.Engine:
         """Connect to Postgres server."""
@@ -40,6 +40,7 @@ class PostgresConnector:
     def upload_data(self, dataframe: 'pd.DataFrame', table_name: str) -> None:
         """Use pandas to_sql method and sqlalchemy engine to send data to postgres."""
         print("Uploading data to postgres...")
+        self._connect_to_database()
         dataframe.to_sql(
             name=table_name,
             con=self.engine,
@@ -48,6 +49,7 @@ class PostgresConnector:
             index=False,
             chunksize=1000
         )
+        self.close_connections()
 
     def close_connections(self) -> None:
         """Close all connections."""

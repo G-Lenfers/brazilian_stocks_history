@@ -217,8 +217,6 @@ class MainEngine(ExtractionEngine):
             table_name=self.file_name.split('.')[0].lower()
         )
 
-        self.postgres.close_connections()
-
     def transform_dataframe(self, dataframe: pd.DataFrame) -> pd.DataFrame:
         """Apply many dataframe transformations."""
         # Exclude file header
