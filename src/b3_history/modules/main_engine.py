@@ -34,6 +34,20 @@ class MainEngine(ExtractionEngine):
             dataframe=transformed_dataframe,
             table_name=self.file_name.split('.')[0].lower()
         )
+        self.upload_extraction_progress()
+
+    def upload_extraction_progress(self) -> None:
+        """Build a dataframe from extraction attribute and upload it to datalake."""
+        dataframe = pd.DataFrame([
+            {
+                "file_name": self.file_name,
+                "last_line_read": self.last_line_read
+            }
+        ])
+        self.postgres.upload_data(
+            dataframe=dataframe,
+            table_name="extraction_progress"
+        )
 
     def transform_dataframe(self, dataframe: pd.DataFrame) -> pd.DataFrame:
         """Apply many dataframe transformations."""
