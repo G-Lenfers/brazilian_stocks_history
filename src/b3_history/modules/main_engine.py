@@ -123,6 +123,7 @@ class ExtractionEngine:
 
     def read_and_extract_data_from_file(self) -> pd.DataFrame:
         """Unzip, read, and store data into pandas dataframe."""
+        batch_size = 100  # TODO remember to revert this parameter to default
         with _open_zipped_file(file_name=self.file_name) as file:
 
             dataframe = pd.DataFrame()
@@ -145,8 +146,8 @@ class ExtractionEngine:
                     ignore_index=True
                 )
 
-                if i != 0 and i % 100 == 0:  # TODO remember to revert this parameter to default
-                    print(f"i: {i}. Finished reading 10000 lines.")
+                if i != 0 and i % batch_size == 0:
+                    print(f"Current batch completed: {i}")
                     self.last_line_read = i + 1
                     self.has_more = True
                     return dataframe
