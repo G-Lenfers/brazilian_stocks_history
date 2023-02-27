@@ -199,7 +199,7 @@ class MainEngine(ExtractionEngine):
     def run_etl(self) -> None:
         """Run main ETL method."""
         # Starting point
-        self._get_last_iteration_from_postgres()
+        self._get_last_line_read_from_postgres()
 
         # Extract
         extracted_dataframe = self.read_and_extract_data_from_file()
@@ -279,9 +279,13 @@ class MainEngine(ExtractionEngine):
         print(f"Raw total lines: {i}")
         return i + 1  # Enumerate starts at zero
 
-    def _get_last_iteration_from_postgres(self):
-        # TODO upload_health_check
-        pass
+    def _get_last_line_read_from_postgres(self):
+        """Run a query to get file's last line read."""
+        self.postgres = PostgresConnector(schema="b3_history")
+
+        query = """SELECT * FROM """
+
+        self.postgres.close_connections()
 
     @staticmethod
     def _remove_whitespaces(series: pd.Series) -> pd.Series:
