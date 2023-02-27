@@ -1,11 +1,11 @@
 """File for orchestrating the extraction, transform and upload data from B3 to postgres data lake or data warehouse."""
-from src.b3_history.modules.main_engine import B3HistoryExtractorEngine
+from src.b3_history.modules.main_engine import MainEngine
 
 
 def lambda_handler(event: any) -> None:
     """Orchestrate the workflow."""
     # Instance main engine
-    engine = B3HistoryExtractorEngine()
+    engine = MainEngine()
 
     # Loop through list of files
     for file in event.get('files_to_run'):

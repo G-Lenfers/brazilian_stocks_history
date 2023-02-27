@@ -19,7 +19,7 @@ ROOT_PATH = os.path.abspath(  # return the absolute path of the following
 RESOURCES_PATH = '/resources/'
 
 
-class B3HistoryExtractorEngine:
+class MainEngine:
     """Main class for reading zipped file, transform the dataframe and upload data to postgres."""
 
     def __init__(self):
