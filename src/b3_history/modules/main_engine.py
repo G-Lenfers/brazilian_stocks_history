@@ -194,12 +194,11 @@ class MainEngine(ExtractionEngine):
     def __init__(self):
         """Initialize constructor."""
         super().__init__()
-
-        # Upload engine
-        self.postgres = PostgresConnector(schema="b3_history")  # TODO create engine before upload and dispose it rigth after
+        self.postgres = None
 
     def run_etl(self) -> None:
         """Run main ETL method."""
+        # Starting point
         self._get_last_iteration_from_postgres()
 
         # Extract
@@ -211,6 +210,7 @@ class MainEngine(ExtractionEngine):
         )
 
         # Load
+        self.postgres = PostgresConnector(schema="b3_history")
         self.postgres.upload_data(
             dataframe=transformed_dataframe,
             table_name=self.file_name.split('.')[0].lower()

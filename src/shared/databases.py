@@ -14,7 +14,7 @@ class PostgresConnector:
 
     def __init__(self, schema: str) -> None:
         """Initialize the constructor."""
-        # Upload parameter
+        # Database parameter
         self.schema = schema
 
         # Database credentials
