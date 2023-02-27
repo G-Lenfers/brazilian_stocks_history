@@ -14,10 +14,11 @@ def lambda_handler(event: any) -> None:
         engine.file_name = file
         engine.total_lines = engine.get_file_total_lines()
 
-        print('end property')
+        # Loop through lines of file
+        while engine.has_more:
 
-        # Execute extract, transform, and load processes
-        engine.run_etl()
+            # Execute extract, transform, and load processes
+            engine.run_etl()
 
     pass
 

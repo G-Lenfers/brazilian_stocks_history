@@ -201,21 +201,20 @@ class MainEngine(ExtractionEngine):
     def run_etl(self) -> None:
         """Run main ETL method."""
         self._get_last_iteration_from_postgres()
-        while self.has_more:
 
-            # Extract
-            extracted_dataframe = self.read_and_extract_data_from_file()
+        # Extract
+        extracted_dataframe = self.read_and_extract_data_from_file()
 
-            # Transform
-            transformed_dataframe = self.transform_dataframe(
-                dataframe=extracted_dataframe
-            )
+        # Transform
+        transformed_dataframe = self.transform_dataframe(
+            dataframe=extracted_dataframe
+        )
 
-            # Load
-            self.postgres.upload_data(
-                dataframe=transformed_dataframe,
-                table_name=self.file_name.split('.')[0].lower()
-            )
+        # Load
+        self.postgres.upload_data(
+            dataframe=transformed_dataframe,
+            table_name=self.file_name.split('.')[0].lower()
+        )
 
         self.postgres.close_connections()
 
