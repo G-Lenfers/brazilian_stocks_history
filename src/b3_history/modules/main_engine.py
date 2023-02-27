@@ -121,6 +121,72 @@ class ExtractionEngine:
 
         self._last_line_read = value
 
+    def read_and_extract_data_from_file(self) -> pd.DataFrame:
+        """Unzip, read, and store data into pandas dataframe."""
+        with _open_zipped_file(file_name=self.file_name) as file:
+
+            dataframe = pd.DataFrame()
+
+            for i, text_line in enumerate(file):
+
+                if i < (self.last_line_read - 1):
+                    continue
+
+                separated_columns = self._separate_columns(text_line=text_line)
+
+                dataframe = pd.concat(
+                    [
+                        dataframe,
+                        pd.DataFrame(
+                            separated_columns,
+                            index=[0]
+                        )
+                    ],
+                    ignore_index=True
+                )
+
+                if i != 0 and i % 100 == 0:  # TODO remember to revert this parameter to default
+                    print(f"i: {i}. Finished reading 10000 lines.")
+                    self.last_line_read = i + 1
+                    self.has_more = True
+                    return dataframe
+
+            print(f"Reached the end of file {self.file_name}.")
+            self.has_more = False
+            return dataframe
+
+    def _separate_columns(self, text_line) -> dict:
+        """Slice text data and separate content appropriately."""
+        return {
+            'tipo_de_registro': text_line[self.columns_separator['tipo_de_registro']],
+            'data_pregao': text_line[self.columns_separator['data_pregao']],
+            'codigo_bdi': text_line[self.columns_separator['codigo_bdi']],
+            'codigo_negociaco_papel': text_line[self.columns_separator['codigo_negociaco_papel']],
+            'tipo_de_mercado': text_line[self.columns_separator['tipo_de_mercado']],
+            'nome_resumido': text_line[self.columns_separator['nome_resumido']],
+            'especificacao_papel': text_line[self.columns_separator['especificacao_papel']],
+            'prazo_dias_mercado_termo': text_line[self.columns_separator['prazo_dias_mercado_termo']],
+            'moeda_referencia': text_line[self.columns_separator['moeda_referencia']],
+            'preco_abertura_pregao': text_line[self.columns_separator['preco_abertura_pregao']],
+            'preco_maximo_pregao': text_line[self.columns_separator['preco_maximo_pregao']],
+            'preco_minimo_pregao': text_line[self.columns_separator['preco_minimo_pregao']],
+            'preco_medio_pregao': text_line[self.columns_separator['preco_medio_pregao']],
+            'preco_ultimo_negocio': text_line[self.columns_separator['preco_ultimo_negocio']],
+            'preco_melhor_oferta_compra': text_line[self.columns_separator['preco_melhor_oferta_compra']],
+            'preco_melhor_oferta_venda': text_line[self.columns_separator['preco_melhor_oferta_venda']],
+            'numero_negocios_efetuados': text_line[self.columns_separator['numero_negocios_efetuados']],
+            'quantidade_total_titulos_negociados': text_line[
+                self.columns_separator['quantidade_total_titulos_negociados']
+            ],
+            'preco_exercicio_opcoes': text_line[self.columns_separator['preco_exercicio_opcoes']],
+            'indicador_correcao_precos': text_line[self.columns_separator['indicador_correcao_precos']],
+            'data_vencimento_opcoes': text_line[self.columns_separator['data_vencimento_opcoes']],
+            'fator_cotacao_papel': text_line[self.columns_separator['fator_cotacao_papel']],
+            'preco_exercicio_pontos_opcoes': text_line[self.columns_separator['preco_exercicio_pontos_opcoes']],
+            'codigo_papel_isin': text_line[self.columns_separator['codigo_papel_isin']],
+            'numero_distribuicao_papel': text_line[self.columns_separator['numero_distribuicao_papel']]
+        }
+
 
 class MainEngine(ExtractionEngine):
     """Main class for reading zipped file, transform the dataframe and upload data to postgres."""
@@ -152,40 +218,6 @@ class MainEngine(ExtractionEngine):
             )
 
         self.postgres.close_connections()
-
-    def read_and_extract_data_from_file(self) -> pd.DataFrame:
-        """Unzip, read, and store data into pandas dataframe."""
-        with _open_zipped_file(file_name=self.file_name) as file:
-
-            dataframe = pd.DataFrame()
-
-            for i, text_line in enumerate(file):
-
-                if i < (self.last_line_read - 1):
-                    continue
-
-                separated_columns = self.separate_columns(text_line=text_line)
-
-                dataframe = pd.concat(
-                    [
-                        dataframe,
-                        pd.DataFrame(
-                            separated_columns,
-                            index=[0]
-                        )
-                    ],
-                    ignore_index=True
-                )
-
-                if i != 0 and i % 100 == 0:  # TODO remember to revert this parameter to default
-                    print(f"i: {i}. Finished reading 10000 lines.")
-                    self.last_line_read = i + 1
-                    self.has_more = True
-                    return dataframe
-
-            print(f"Reached the end of file {self.file_name}.")
-            self.has_more = False
-            return dataframe
 
     def transform_dataframe(self, dataframe: pd.DataFrame) -> pd.DataFrame:
         """Apply many dataframe transformations."""
@@ -251,38 +283,6 @@ class MainEngine(ExtractionEngine):
     def _get_last_iteration_from_postgres(self):
         # TODO upload_health_check
         pass
-
-    def separate_columns(self, text_line) -> dict:
-        """Slice text data and separate content appropriately."""
-        return {
-            'tipo_de_registro': text_line[self.columns_separator['tipo_de_registro']],
-            'data_pregao': text_line[self.columns_separator['data_pregao']],
-            'codigo_bdi': text_line[self.columns_separator['codigo_bdi']],
-            'codigo_negociaco_papel': text_line[self.columns_separator['codigo_negociaco_papel']],
-            'tipo_de_mercado': text_line[self.columns_separator['tipo_de_mercado']],
-            'nome_resumido': text_line[self.columns_separator['nome_resumido']],
-            'especificacao_papel': text_line[self.columns_separator['especificacao_papel']],
-            'prazo_dias_mercado_termo': text_line[self.columns_separator['prazo_dias_mercado_termo']],
-            'moeda_referencia': text_line[self.columns_separator['moeda_referencia']],
-            'preco_abertura_pregao': text_line[self.columns_separator['preco_abertura_pregao']],
-            'preco_maximo_pregao': text_line[self.columns_separator['preco_maximo_pregao']],
-            'preco_minimo_pregao': text_line[self.columns_separator['preco_minimo_pregao']],
-            'preco_medio_pregao': text_line[self.columns_separator['preco_medio_pregao']],
-            'preco_ultimo_negocio': text_line[self.columns_separator['preco_ultimo_negocio']],
-            'preco_melhor_oferta_compra': text_line[self.columns_separator['preco_melhor_oferta_compra']],
-            'preco_melhor_oferta_venda': text_line[self.columns_separator['preco_melhor_oferta_venda']],
-            'numero_negocios_efetuados': text_line[self.columns_separator['numero_negocios_efetuados']],
-            'quantidade_total_titulos_negociados': text_line[
-                self.columns_separator['quantidade_total_titulos_negociados']
-            ],
-            'preco_exercicio_opcoes': text_line[self.columns_separator['preco_exercicio_opcoes']],
-            'indicador_correcao_precos': text_line[self.columns_separator['indicador_correcao_precos']],
-            'data_vencimento_opcoes': text_line[self.columns_separator['data_vencimento_opcoes']],
-            'fator_cotacao_papel': text_line[self.columns_separator['fator_cotacao_papel']],
-            'preco_exercicio_pontos_opcoes': text_line[self.columns_separator['preco_exercicio_pontos_opcoes']],
-            'codigo_papel_isin': text_line[self.columns_separator['codigo_papel_isin']],
-            'numero_distribuicao_papel': text_line[self.columns_separator['numero_distribuicao_papel']]
-        }
 
     @staticmethod
     def _remove_whitespaces(series: pd.Series) -> pd.Series:
