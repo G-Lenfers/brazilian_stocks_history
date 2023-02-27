@@ -26,7 +26,7 @@ def lambda_handler(event: any) -> None:
 if __name__ == "__main__":
     event = {
         "files_to_run": [
-            "COTAHIST_A2006.zip"
+            "COTAHIST_A1986.zip"
         ]
     }
     lambda_handler(event=event)

@@ -29,9 +29,9 @@ class PostgresConnector:
         self.driver = 'psycopg2'
         self.engine = None
 
-    def _connect_to_database(self) -> sqlalchemy.engine.base.Engine:
+    def _connect_to_database(self) -> None:
         """Connect to Postgres server."""
-        return create_engine(
+        self.engine = create_engine(
             f"{self.dialect}+{self.driver}://"
             f"{self.user}:{self.password}@"
             f"{self.host}:{self.port}/{self.database}"

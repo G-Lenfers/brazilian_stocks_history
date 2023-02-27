@@ -14,11 +14,11 @@ class MainEngine(ExtractionEngine):
     def __init__(self):
         """Initialize constructor."""
         super().__init__()
-        self.postgres = None
+        self.postgres = PostgresConnector(schema="b3_history")
 
     def run_etl(self) -> None:
         """Run main ETL method."""
-        # Starting point
+        # Get metadata for extraction
         self._get_last_line_read_from_postgres()
 
         # Extract
@@ -30,7 +30,6 @@ class MainEngine(ExtractionEngine):
         )
 
         # Load
-        self.postgres = PostgresConnector(schema="b3_history")
         self.postgres.upload_data(
             dataframe=transformed_dataframe,
             table_name=self.file_name.split('.')[0].lower()
@@ -86,11 +85,12 @@ class MainEngine(ExtractionEngine):
 
     def _get_last_line_read_from_postgres(self):
         """Run a query to get file's last line read."""
-        self.postgres = PostgresConnector(schema="b3_history")
-
-        query = """SELECT * FROM """
-
-        self.postgres.close_connections()
+        pass
+        # self.postgres = PostgresConnector(schema="b3_history")
+        #
+        # query = """SELECT * FROM """
+        #
+        # self.postgres.close_connections()
 
     @staticmethod
     def _remove_whitespaces(series: pd.Series) -> pd.Series:
