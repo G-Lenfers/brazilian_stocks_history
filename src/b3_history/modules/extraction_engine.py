@@ -25,7 +25,7 @@ class ExtractionEngine:
 
         # Extraction properties
         self._has_more = True
-        self._last_line_read = 0
+        self._last_line_read = -1  # First line to read will have i=0
         self.columns_separator = {
             'tipo_de_registro': slice(0, 2),
             'data_pregao': slice(2, 10),
@@ -138,7 +138,7 @@ class ExtractionEngine:
 
             for i, text_line in enumerate(file):
 
-                if i < (self.last_line_read - 1):
+                if i <= self.last_line_read:
                     continue
 
                 separated_columns = self._separate_columns(text_line=text_line)
@@ -156,7 +156,7 @@ class ExtractionEngine:
 
                 if i != 0 and i % batch_size == 0:
                     print(f"Current batch completed: {i}")
-                    self.last_line_read = i + 1
+                    self.last_line_read = i
                     self.has_more = True
                     return dataframe
 
