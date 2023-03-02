@@ -1,12 +1,8 @@
 """File containing methods for Postgres."""
 import os
-from typing import TYPE_CHECKING
 
-import sqlalchemy.engine.base
+import pandas as pd
 from sqlalchemy import create_engine
-
-if TYPE_CHECKING:
-    import pandas as pd
 
 
 class PostgresConnector:
@@ -37,9 +33,9 @@ class PostgresConnector:
             f"{self.host}:{self.port}/{self.database}"
         )
 
-    def upload_data(self, dataframe: 'pd.DataFrame', table_name: str) -> None:
+    def upload_data(self, dataframe: pd.DataFrame, table_name: str) -> None:
         """Use pandas to_sql method and sqlalchemy engine to send data to postgres."""
-        # print("Uploading data to postgres...")
+        print("Uploading data to postgres...", end='')
         self._connect_to_database()
         dataframe.to_sql(
             name=table_name,
@@ -50,6 +46,18 @@ class PostgresConnector:
             chunksize=1000
         )
         self.close_connections()
+        print('Upload complete!')
+
+    def read_sql_query(self, query) -> pd.DataFrame:
+        """Run a query in the database and return its result as a dataframe."""
+        self._connect_to_database()
+        dataframe = pd.read_sql_query(
+            sql=query,
+            con=self.engine
+        )
+        self.close_connections()
+
+        return dataframe
 
     def close_connections(self) -> None:
         """Close all connections."""

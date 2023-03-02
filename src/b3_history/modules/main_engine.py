@@ -99,12 +99,12 @@ class MainEngine(ExtractionEngine):
 
     def _get_last_line_read_from_postgres(self):
         """Run a query to get file's last line read."""
-        pass
-        # self.postgres = PostgresConnector(schema="b3_history")
-        #
-        # query = """SELECT * FROM """
-        #
-        # self.postgres.close_connections()
+        query = """SELECT * FROM b3_history.extraction_progress"""
+
+        extraction_progress = self.postgres.read_sql_query(query=query)
+        file_filter = extraction_progress['file_name'] == self.file_name
+
+        self.last_line_read = int(extraction_progress[file_filter]['last_line_read'].max())
 
     @staticmethod
     def _remove_whitespaces(series: pd.Series) -> pd.Series:
