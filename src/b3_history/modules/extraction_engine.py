@@ -136,12 +136,12 @@ class ExtractionEngine:
 
             dataframe = pd.DataFrame()
 
-            for i, text_line in enumerate(file):
+            for line_row, line_text in enumerate(file):
 
-                if i <= self.last_line_read:
+                if line_row <= self.last_line_read:
                     continue
 
-                separated_columns = self._separate_columns(text_line=text_line)
+                separated_columns = self._separate_columns(text=line_text)
 
                 dataframe = pd.concat(
                     [
@@ -154,9 +154,9 @@ class ExtractionEngine:
                     ignore_index=True
                 )
 
-                if i != 0 and i % batch_size == 0:
-                    print(f"Current batch completed: {i}")
-                    self.last_line_read = i
+                if line_row != 0 and line_row % batch_size == 0:
+                    print(f"Current batch completed: {line_row}")
+                    self.last_line_read = line_row
                     self.has_more = True
                     return dataframe
 
@@ -164,36 +164,36 @@ class ExtractionEngine:
             self.has_more = False
             return dataframe
 
-    def _separate_columns(self, text_line) -> dict:
+    def _separate_columns(self, text) -> dict:
         """Slice text data and separate content appropriately."""
         return {
-            'tipo_de_registro': text_line[self.columns_separator['tipo_de_registro']],
-            'data_pregao': text_line[self.columns_separator['data_pregao']],
-            'codigo_bdi': text_line[self.columns_separator['codigo_bdi']],
-            'codigo_negociaco_papel': text_line[self.columns_separator['codigo_negociaco_papel']],
-            'tipo_de_mercado': text_line[self.columns_separator['tipo_de_mercado']],
-            'nome_resumido': text_line[self.columns_separator['nome_resumido']],
-            'especificacao_papel': text_line[self.columns_separator['especificacao_papel']],
-            'prazo_dias_mercado_termo': text_line[self.columns_separator['prazo_dias_mercado_termo']],
-            'moeda_referencia': text_line[self.columns_separator['moeda_referencia']],
-            'preco_abertura_pregao': text_line[self.columns_separator['preco_abertura_pregao']],
-            'preco_maximo_pregao': text_line[self.columns_separator['preco_maximo_pregao']],
-            'preco_minimo_pregao': text_line[self.columns_separator['preco_minimo_pregao']],
-            'preco_medio_pregao': text_line[self.columns_separator['preco_medio_pregao']],
-            'preco_ultimo_negocio': text_line[self.columns_separator['preco_ultimo_negocio']],
-            'preco_melhor_oferta_compra': text_line[self.columns_separator['preco_melhor_oferta_compra']],
-            'preco_melhor_oferta_venda': text_line[self.columns_separator['preco_melhor_oferta_venda']],
-            'numero_negocios_efetuados': text_line[self.columns_separator['numero_negocios_efetuados']],
-            'quantidade_total_titulos_negociados': text_line[
+            'tipo_de_registro': text[self.columns_separator['tipo_de_registro']],
+            'data_pregao': text[self.columns_separator['data_pregao']],
+            'codigo_bdi': text[self.columns_separator['codigo_bdi']],
+            'codigo_negociaco_papel': text[self.columns_separator['codigo_negociaco_papel']],
+            'tipo_de_mercado': text[self.columns_separator['tipo_de_mercado']],
+            'nome_resumido': text[self.columns_separator['nome_resumido']],
+            'especificacao_papel': text[self.columns_separator['especificacao_papel']],
+            'prazo_dias_mercado_termo': text[self.columns_separator['prazo_dias_mercado_termo']],
+            'moeda_referencia': text[self.columns_separator['moeda_referencia']],
+            'preco_abertura_pregao': text[self.columns_separator['preco_abertura_pregao']],
+            'preco_maximo_pregao': text[self.columns_separator['preco_maximo_pregao']],
+            'preco_minimo_pregao': text[self.columns_separator['preco_minimo_pregao']],
+            'preco_medio_pregao': text[self.columns_separator['preco_medio_pregao']],
+            'preco_ultimo_negocio': text[self.columns_separator['preco_ultimo_negocio']],
+            'preco_melhor_oferta_compra': text[self.columns_separator['preco_melhor_oferta_compra']],
+            'preco_melhor_oferta_venda': text[self.columns_separator['preco_melhor_oferta_venda']],
+            'numero_negocios_efetuados': text[self.columns_separator['numero_negocios_efetuados']],
+            'quantidade_total_titulos_negociados': text[
                 self.columns_separator['quantidade_total_titulos_negociados']
             ],
-            'preco_exercicio_opcoes': text_line[self.columns_separator['preco_exercicio_opcoes']],
-            'indicador_correcao_precos': text_line[self.columns_separator['indicador_correcao_precos']],
-            'data_vencimento_opcoes': text_line[self.columns_separator['data_vencimento_opcoes']],
-            'fator_cotacao_papel': text_line[self.columns_separator['fator_cotacao_papel']],
-            'preco_exercicio_pontos_opcoes': text_line[self.columns_separator['preco_exercicio_pontos_opcoes']],
-            'codigo_papel_isin': text_line[self.columns_separator['codigo_papel_isin']],
-            'numero_distribuicao_papel': text_line[self.columns_separator['numero_distribuicao_papel']]
+            'preco_exercicio_opcoes': text[self.columns_separator['preco_exercicio_opcoes']],
+            'indicador_correcao_precos': text[self.columns_separator['indicador_correcao_precos']],
+            'data_vencimento_opcoes': text[self.columns_separator['data_vencimento_opcoes']],
+            'fator_cotacao_papel': text[self.columns_separator['fator_cotacao_papel']],
+            'preco_exercicio_pontos_opcoes': text[self.columns_separator['preco_exercicio_pontos_opcoes']],
+            'codigo_papel_isin': text[self.columns_separator['codigo_papel_isin']],
+            'numero_distribuicao_papel': text[self.columns_separator['numero_distribuicao_papel']]
         }
 
     @staticmethod
