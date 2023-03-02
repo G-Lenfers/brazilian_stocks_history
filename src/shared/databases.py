@@ -3,6 +3,7 @@ import os
 
 import pandas as pd
 from sqlalchemy import create_engine
+from sqlalchemy.exc import ProgrammingError
 
 
 class PostgresConnector:
@@ -35,7 +36,6 @@ class PostgresConnector:
 
     def upload_data(self, dataframe: pd.DataFrame, table_name: str) -> None:
         """Use pandas to_sql method and sqlalchemy engine to send data to postgres."""
-        print("Uploading data to postgres...", end='')
         self._connect_to_database()
         dataframe.to_sql(
             name=table_name,
@@ -46,16 +46,21 @@ class PostgresConnector:
             chunksize=1000
         )
         self.close_connections()
-        print('Upload complete!')
 
     def read_sql_query(self, query) -> pd.DataFrame:
         """Run a query in the database and return its result as a dataframe."""
         self._connect_to_database()
-        dataframe = pd.read_sql_query(
-            sql=query,
-            con=self.engine
-        )
-        self.close_connections()
+        try:
+            dataframe = pd.read_sql_query(
+                sql=query,
+                con=self.engine
+            )
+        except ProgrammingError as error:
+            # In case of UndefinedTable, we re-raise to catch the original error
+            raise error.orig
+
+        finally:
+            self.close_connections()
 
         return dataframe
 
