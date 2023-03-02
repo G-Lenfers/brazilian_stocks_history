@@ -1,4 +1,4 @@
-"""File for orchestrating the extraction, transform and upload data from B3 to postgres data lake or data warehouse."""
+"""File for orchestrating the ETL process of B3 stock history."""
 from src.b3_history.modules.main_engine import MainEngine
 
 
