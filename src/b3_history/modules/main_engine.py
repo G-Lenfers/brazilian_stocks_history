@@ -29,7 +29,7 @@ class MainEngine(ExtractionEngine, TransformationEngine):
         )
 
         # Load
-        print("Uploading data to postgres...", end='')
+        print("Uploading data to postgres... ", end='')
         self.postgres.upload_data(
             dataframe=transformed_dataframe,
             table_name=self.file_name.split('.')[0].lower()
