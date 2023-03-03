@@ -15,11 +15,12 @@ class TransformationEngine:
         dataframe = dataframe[header_filter]
 
         # Special character treatment
-        dataframe.replace(
-            to_replace=['\x00^', '\x00\x0f'],
-            value='',
-            inplace=True
-        )  # TODO see why this is not working as expected
+        # Known special character list: '\x00\x0f', '\x01\x0f', '\x03\x07'
+        special_character_columns = 'prazo_dias_mercado_termo'
+        special_character_filter = dataframe[special_character_columns].str.contains(
+            "\x00|\x01|\x0f|\x03|\x07"
+        )
+        dataframe.loc[special_character_filter, special_character_columns] = np.nan
 
         # Remove whitespaces
         dataframe = dataframe.apply(self._remove_whitespaces)
@@ -55,6 +56,9 @@ class TransformationEngine:
         dataframe[integer_colummns] = dataframe[integer_colummns].applymap(self._format_quantity_values)
 
         return dataframe
+
+    # @staticmethod
+    # def _remove_special_characters(dataframe):
 
     @staticmethod
     def _remove_whitespaces(series: pd.Series) -> pd.Series:

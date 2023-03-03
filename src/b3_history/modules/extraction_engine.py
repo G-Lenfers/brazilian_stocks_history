@@ -131,7 +131,7 @@ class ExtractionEngine:
 
     def read_and_extract_data_from_file(self) -> pd.DataFrame:
         """Unzip, read, and store data into pandas dataframe."""
-        batch_size = 100  # TODO remember to revert this parameter to default
+        batch_size = 1000  # TODO remember to revert this parameter to default
         with self._open_zipped_file(file_name=self.file_name) as file:
 
             dataframe = pd.DataFrame()
