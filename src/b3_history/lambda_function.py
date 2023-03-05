@@ -14,8 +14,19 @@ def lambda_handler(event: any) -> None:
         engine.file_name = file
         engine.total_lines = engine.get_file_total_lines()
 
+        # After completion of a certain file, the next one should have has_more parameter reset
+        engine.has_more = True
+
         # Loop through lines of file
         while engine.has_more:
+
+            # Get metadata for extraction
+            engine.get_last_line_read_from_postgres()
+
+            # Check if file has already been read (remember that python considers first line as zero)
+            if (engine.last_line_read + 1) == engine.total_lines:
+                engine.has_more = False
+                continue
 
             # Execute extract, transform, and load processes
             engine.run_etl()
@@ -26,7 +37,8 @@ def lambda_handler(event: any) -> None:
 if __name__ == "__main__":
     event = {
         "files_to_run": [
-            "COTAHIST_A1986.zip"
+            "COTAHIST_A1986.zip",
+            "COTAHIST_A1987.zip"
         ]
     }
     lambda_handler(event=event)

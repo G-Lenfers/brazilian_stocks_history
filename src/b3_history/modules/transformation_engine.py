@@ -10,17 +10,17 @@ class TransformationEngine:
 
     def transform_dataframe(self, dataframe: pd.DataFrame) -> pd.DataFrame:
         """Apply many dataframe transformations."""
-        # Exclude file header
-        header_filter = dataframe['data_pregao'] != "COTAHIST"
-        dataframe = dataframe[header_filter]
+        # Exclude file header and trailer
+        header_trailer_filter = dataframe['data_pregao'] != "COTAHIST"
+        dataframe = dataframe[header_trailer_filter]
 
         # Special character treatment
-        # Known special character list: '\x00\x0f', '\x01\x0f', '\x03\x07', '\x02?'
         special_character_columns = 'prazo_dias_mercado_termo'
         special_character_filter = dataframe[special_character_columns].str.contains(
-            "\x00|\x01|\x0f|\x03|\x07|\x02"
+            "\x00|\x01|\x0f|\x03|\x07|\x02"  # characters that were found during extraction
         )
-        dataframe.loc[special_character_filter, special_character_columns] = np.nan
+        if special_character_filter.sum():
+            dataframe.loc[special_character_filter, special_character_columns] = np.nan
 
         # Remove whitespaces
         dataframe = dataframe.apply(self._remove_whitespaces)
@@ -48,17 +48,14 @@ class TransformationEngine:
         dataframe[price_columns] = dataframe[price_columns].applymap(self._format_price_values)
 
         # Format string to integer
-        integer_colummns = [
+        integer_columns = [
             'prazo_dias_mercado_termo',
             'numero_negocios_efetuados',
             'quantidade_total_titulos_negociados'
         ]
-        dataframe[integer_colummns] = dataframe[integer_colummns].applymap(self._format_quantity_values)
+        dataframe[integer_columns] = dataframe[integer_columns].applymap(self._format_quantity_values)
 
         return dataframe
-
-    # @staticmethod
-    # def _remove_special_characters(dataframe):
 
     @staticmethod
     def _remove_whitespaces(series: pd.Series) -> pd.Series:

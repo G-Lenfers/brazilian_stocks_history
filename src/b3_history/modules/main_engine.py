@@ -17,9 +17,6 @@ class MainEngine(ExtractionEngine, TransformationEngine):
 
     def run_etl(self) -> None:
         """Run main ETL method."""
-        # Get metadata for extraction
-        self._get_last_line_read_from_postgres()
-
         # Extract
         extracted_dataframe = self.read_and_extract_data_from_file()
 
@@ -50,22 +47,30 @@ class MainEngine(ExtractionEngine, TransformationEngine):
             table_name="extraction_progress"
         )
 
-    def _get_last_line_read_from_postgres(self) -> None:
+    def get_last_line_read_from_postgres(self) -> None:
         """Run a query to get file's last line read."""
-        query = """SELECT * FROM b3_history.extraction_progress"""
+        query = """
+            SELECT *
+            FROM b3_history.extraction_progress
+            WHERE file_name = %(file_name)s
+            ORDER BY last_line_read DESC
+            LIMIT 1
+        """
+        query_parameter = {'file_name': self.file_name}
 
         try:
-            extraction_progress = self.postgres.read_sql_query(query=query)
+            extraction_progress = self.postgres.read_sql_query(
+                query=query,
+                params=query_parameter
+            )
         except UndefinedTable:
             # project's first run will create this table later on
             self.last_line_read = 0
             return
 
         if not len(extraction_progress):
-            # In case of TRUNCATE, the table will be empty
+            # File will be read for the first time
             self.last_line_read = 0
             return
 
-        file_filter = extraction_progress['file_name'] == self.file_name
-
-        self.last_line_read = int(extraction_progress[file_filter]['last_line_read'].max())
+        self.last_line_read = int(extraction_progress['last_line_read'])
