@@ -20,6 +20,11 @@ class MainEngine(ExtractionEngine, TransformationEngine):
         # Get metadata for extraction
         self._get_last_line_read_from_postgres()
 
+        # Check if file has already been read (remember that python considers first line as zero)
+        if (self.last_line_read + 1) == self.total_lines:
+            self.has_more = False
+            return
+
         # Extract
         extracted_dataframe = self.read_and_extract_data_from_file()
 
