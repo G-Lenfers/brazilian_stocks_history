@@ -162,6 +162,7 @@ class ExtractionEngine:
                     return dataframe
 
             print(f"Reached the end of file {self.file_name}.")
+            self.last_line_read = line_row
             self.has_more = False
             return dataframe
 
