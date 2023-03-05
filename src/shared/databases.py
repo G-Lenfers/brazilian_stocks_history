@@ -47,13 +47,14 @@ class PostgresConnector:
         )
         self.close_connections()
 
-    def read_sql_query(self, query) -> pd.DataFrame:
+    def read_sql_query(self, query: str, params: dict) -> pd.DataFrame:
         """Run a query in the database and return its result as a dataframe."""
         self._connect_to_database()
         try:
             dataframe = pd.read_sql_query(
                 sql=query,
-                con=self.engine
+                con=self.engine,
+                params=params
             )
         except ProgrammingError as error:
             # In case of UndefinedTable, we re-raise to catch the original error
