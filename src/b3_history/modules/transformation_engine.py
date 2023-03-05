@@ -10,9 +10,9 @@ class TransformationEngine:
 
     def transform_dataframe(self, dataframe: pd.DataFrame) -> pd.DataFrame:
         """Apply many dataframe transformations."""
-        # Exclude file header
-        header_filter = dataframe['data_pregao'] != "COTAHIST"
-        dataframe = dataframe[header_filter]
+        # Exclude file header and trailer
+        header_trailer_filter = dataframe['data_pregao'] != "COTAHIST"
+        dataframe = dataframe[header_trailer_filter]
 
         # Special character treatment
         special_character_columns = 'prazo_dias_mercado_termo'
