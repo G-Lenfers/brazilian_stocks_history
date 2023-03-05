@@ -48,17 +48,14 @@ class TransformationEngine:
         dataframe[price_columns] = dataframe[price_columns].applymap(self._format_price_values)
 
         # Format string to integer
-        integer_colummns = [
+        integer_columns = [
             'prazo_dias_mercado_termo',
             'numero_negocios_efetuados',
             'quantidade_total_titulos_negociados'
         ]
-        dataframe[integer_colummns] = dataframe[integer_colummns].applymap(self._format_quantity_values)
+        dataframe[integer_columns] = dataframe[integer_columns].applymap(self._format_quantity_values)
 
         return dataframe
-
-    # @staticmethod
-    # def _remove_special_characters(dataframe):
 
     @staticmethod
     def _remove_whitespaces(series: pd.Series) -> pd.Series:
