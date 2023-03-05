@@ -54,7 +54,7 @@ class MainEngine(ExtractionEngine, TransformationEngine):
             FROM b3_history.extraction_progress
             WHERE file_name = %(file_name)s
             ORDER BY last_line_read DESC
-            LIMIT 1
+            LIMIT 1;
         """
         query_parameter = {'file_name': self.file_name}
 
