@@ -126,7 +126,7 @@ class ExtractionEngine:
                 pass
 
         # Save into class property
-        print(f"Raw total lines: {i}")
+        print(f"File {self.file_name} total lines: {i}")
         return i + 1  # Enumerate starts at zero
 
     def read_and_extract_data_from_file(self) -> pd.DataFrame:
