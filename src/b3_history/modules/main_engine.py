@@ -47,7 +47,7 @@ class MainEngine(ExtractionEngine, TransformationEngine):
             table_name="extraction_progress"
         )
 
-    def _get_last_line_read_from_postgres(self) -> None:
+    def get_last_line_read_from_postgres(self) -> None:
         """Run a query to get file's last line read."""
         query = """SELECT * FROM b3_history.extraction_progress"""
 
