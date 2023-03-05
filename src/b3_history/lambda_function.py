@@ -14,7 +14,7 @@ def lambda_handler(event: any) -> None:
         engine.file_name = file
         engine.total_lines = engine.get_file_total_lines()
 
-        # After completion of a certain file, the next one should have has_more parameter reset
+        # After completion of a certain file, the next iteration should reset has_more parameter
         engine.has_more = True
 
         # Loop through lines of file
