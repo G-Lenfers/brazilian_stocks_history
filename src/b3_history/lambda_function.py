@@ -17,6 +17,14 @@ def lambda_handler(event: any) -> None:
         # Loop through lines of file
         while engine.has_more:
 
+            # Get metadata for extraction
+            engine._get_last_line_read_from_postgres()
+
+            # Check if file has already been read (remember that python considers first line as zero)
+            if (engine.last_line_read + 1) == engine.total_lines:
+                engine.has_more = False
+                continue
+
             # Execute extract, transform, and load processes
             engine.run_etl()
 
