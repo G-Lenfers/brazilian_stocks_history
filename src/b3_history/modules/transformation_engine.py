@@ -15,12 +15,12 @@ class TransformationEngine:
         dataframe = dataframe[header_filter]
 
         # Special character treatment
-        # Known special character list: '\x00\x0f', '\x01\x0f', '\x03\x07', '\x02?'
         special_character_columns = 'prazo_dias_mercado_termo'
         special_character_filter = dataframe[special_character_columns].str.contains(
-            "\x00|\x01|\x0f|\x03|\x07|\x02"
+            "\x00|\x01|\x0f|\x03|\x07|\x02"  # characters that were found during extraction
         )
-        dataframe.loc[special_character_filter, special_character_columns] = np.nan
+        if special_character_filter.sum():
+            dataframe.loc[special_character_filter, special_character_columns] = np.nan
 
         # Remove whitespaces
         dataframe = dataframe.apply(self._remove_whitespaces)
