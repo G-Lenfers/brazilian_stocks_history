@@ -24,7 +24,7 @@ class ExtractionEngine:
         self._file_total_lines = 0
 
         # Extraction properties
-        self.batch_size = 1000
+        self._batch_size = 1000
         self._has_more = True
         self._last_line_read = -1  # First line to read will have i=0
         self.columns_separator = {
@@ -103,22 +103,22 @@ class ExtractionEngine:
             except ValueError:
                 print('Invalid input of batch size. Please check your event.\n'
                       'Using default value of 1000...')
-                self.batch_size = 1000
+                self._batch_size = 1000
                 return
 
             except TypeError:
                 print('Invalid input of batch size. Please check your event.\n'
                       'Using default value of 1000...')
-                self.batch_size = 1000
+                self._batch_size = 1000
                 return
 
         if value < 0:
             print('Warning! Batch size parameter must not be negative.\n'
                   'Using default value of 1000...')
-            self.batch_size = 1000
+            self._batch_size = 1000
             return
 
-        self.batch_size = value
+        self._batch_size = value
 
     @property
     def has_more(self) -> bool:
