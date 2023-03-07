@@ -7,6 +7,10 @@ def lambda_handler(event: any) -> None:
     # Instance main engine
     engine = MainEngine()
 
+    # Set properties according to received event
+    if event.get('batch_size'):
+        engine.batch_size = event.get('batch_size')
+
     # Loop through list of files
     for file in event.get('files_to_run'):
 
@@ -17,7 +21,7 @@ def lambda_handler(event: any) -> None:
         # After completion of a certain file, the next iteration should reset has_more parameter
         engine.has_more = True
 
-        # Loop through lines of file
+        # Loop through batches of file's lines
         while engine.has_more:
 
             # Get metadata for extraction
@@ -36,9 +40,13 @@ def lambda_handler(event: any) -> None:
 
 if __name__ == "__main__":
     event = {
-        "files_to_run": [
+        'batch_size': 5000,
+        'files_to_run': [
             "COTAHIST_A1986.zip",
-            "COTAHIST_A1987.zip"
+            "COTAHIST_A1987.zip",
+            "COTAHIST_A1988.zip",
+            "COTAHIST_A1989.zip",
+            "COTAHIST_A1990.zip"
         ]
     }
     lambda_handler(event=event)
