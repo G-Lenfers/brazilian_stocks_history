@@ -167,7 +167,7 @@ class ExtractionEngine:
         Unzip, read, and store data into pandas dataframe.
 
         Note: File's first line will not be read! (it will hit the continue statement)
-        This way, we can state firmly state that last_line_read parameter must not be negative.
+        This way, we can firmly state that last_line_read parameter must not be negative.
         The first line would have been thrown away inside transformation engine anyway.
         """
         with self._open_zipped_file(file_name=self.file_name) as file:
