@@ -26,7 +26,7 @@ class ExtractionEngine:
         # Extraction properties
         self._batch_size = 1000
         self._has_more = True
-        self._last_line_read = -1  # First line to read will have i=0
+        self._last_line_read = 0  # First line to read will have i=0
         self.columns_separator = {
             'tipo_de_registro': slice(0, 2),
             'data_pregao': slice(2, 10),
@@ -163,7 +163,13 @@ class ExtractionEngine:
         return i + 1  # Enumerate starts at zero
 
     def read_and_extract_data_from_file(self) -> pd.DataFrame:
-        """Unzip, read, and store data into pandas dataframe."""
+        """
+        Unzip, read, and store data into pandas dataframe.
+
+        Note: File's first line will not be read! (it will hit the continue statement)
+        This way, we can state firmly state that last_line_read parameter must not be negative.
+        The first line would have been thrown away inside transformation engine anyway.
+        """
         with self._open_zipped_file(file_name=self.file_name) as file:
 
             dataframe = pd.DataFrame()
@@ -171,6 +177,7 @@ class ExtractionEngine:
             print('Reading file... ', end='')
             for line_row, line_text in enumerate(file):
 
+                # Avoid re-reading lines that had already been read
                 if line_row <= self.last_line_read:
                     continue
 
@@ -187,6 +194,7 @@ class ExtractionEngine:
                     ignore_index=True
                 )
 
+                # Batch completion verification
                 if line_row != 0 and line_row % self.batch_size == 0:
                     print(f"Batch {line_row} completed!")
                     self.last_line_read = line_row

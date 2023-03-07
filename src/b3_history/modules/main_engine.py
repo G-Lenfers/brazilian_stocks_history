@@ -65,12 +65,12 @@ class MainEngine(ExtractionEngine, TransformationEngine):
             )
         except UndefinedTable:
             # project's first run will create this table later on
-            self.last_line_read = -1
+            self.last_line_read = 0
             return
 
         if not len(extraction_progress):
             # File will be read for the first time
-            self.last_line_read = -1
+            self.last_line_read = 0
             return
 
         self.last_line_read = int(extraction_progress['last_line_read'])
