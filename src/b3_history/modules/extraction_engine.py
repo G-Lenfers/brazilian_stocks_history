@@ -182,7 +182,7 @@ class ExtractionEngine:
                     continue
 
                 # Split line's content
-                split_content = self._separate_columns(text=line_text)
+                split_content = self._slice_columns(text=line_text)
 
                 # Concatenate this loop's content with the previous ones
                 dataframe = pd.concat(
@@ -208,7 +208,7 @@ class ExtractionEngine:
             self.has_more = False
             return dataframe
 
-    def _separate_columns(self, text) -> dict:
+    def _slice_columns(self, text) -> dict:
         """Slice text data and split its content appropriately."""
         return {
             'tipo_de_registro': text[self.columns_separator['tipo_de_registro']],
