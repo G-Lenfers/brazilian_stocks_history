@@ -91,7 +91,7 @@ class ExtractionEngine:
     @property
     def batch_size(self) -> int:
         """Access attribute value."""
-        return self.batch_size
+        return self._batch_size
 
     @batch_size.setter
     def batch_size(self, value: int) -> None:
