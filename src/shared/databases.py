@@ -57,7 +57,7 @@ class PostgresConnector:
                 params=params
             )
         except ProgrammingError as error:
-            # In case of UndefinedTable, we re-raise to catch the original error
+            # In case of UndefinedTable error, we re-raise it to catch the original error
             raise error.orig
 
         finally:

@@ -17,7 +17,7 @@ class TransformationEngine:
         # Special character treatment
         special_character_columns = 'prazo_dias_mercado_termo'
         special_character_filter = dataframe[special_character_columns].str.contains(
-            "\x00|\x01|\x0f|\x03|\x07|\x02"  # characters that were found during extraction
+            "\x00|\x01|\x0f|\x03|\x07|\x02|\t\""  # characters that were found during extraction
         )
         if special_character_filter.sum():
             dataframe.loc[special_character_filter, special_character_columns] = np.nan

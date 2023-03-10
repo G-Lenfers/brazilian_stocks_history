@@ -24,8 +24,9 @@ class ExtractionEngine:
         self._file_total_lines = 0
 
         # Extraction properties
+        self._batch_size = 1000
         self._has_more = True
-        self._last_line_read = -1  # First line to read will have i=0
+        self._last_line_read = 0  # First line to read will have i=0
         self.columns_separator = {
             'tipo_de_registro': slice(0, 2),
             'data_pregao': slice(2, 10),
@@ -88,6 +89,38 @@ class ExtractionEngine:
         self._file_total_lines = value
 
     @property
+    def batch_size(self) -> int:
+        """Access attribute value."""
+        return self._batch_size
+
+    @batch_size.setter
+    def batch_size(self, value: int) -> None:
+        """Define property setter and validate inputted file name."""
+        if not isinstance(value, int):
+            try:
+                value = int(value)
+
+            except ValueError:
+                print('Invalid input of batch size. Please check your event.\n'
+                      'Using default value of 1000...')
+                self._batch_size = 1000
+                return
+
+            except TypeError:
+                print('Invalid input of batch size. Please check your event.\n'
+                      'Using default value of 1000...')
+                self._batch_size = 1000
+                return
+
+        if value < 0:
+            print('Warning! Batch size parameter must not be negative.\n'
+                  'Using default value of 1000...')
+            self._batch_size = 1000
+            return
+
+        self._batch_size = value
+
+    @property
     def has_more(self) -> bool:
         """Access attribute value."""
         return self._has_more
@@ -130,8 +163,13 @@ class ExtractionEngine:
         return i + 1  # Enumerate starts at zero
 
     def read_and_extract_data_from_file(self) -> pd.DataFrame:
-        """Unzip, read, and store data into pandas dataframe."""
-        batch_size = 5000
+        """
+        Unzip, read, and store data into pandas dataframe.
+
+        Note: File's first line will not be read! (it will hit the continue statement)
+        This way, we can firmly state that last_line_read parameter must not be negative.
+        The first line would have been thrown away inside transformation engine anyway.
+        """
         with self._open_zipped_file(file_name=self.file_name) as file:
 
             dataframe = pd.DataFrame()
@@ -139,23 +177,27 @@ class ExtractionEngine:
             print('Reading file... ', end='')
             for line_row, line_text in enumerate(file):
 
+                # Avoid re-reading lines that had already been read
                 if line_row <= self.last_line_read:
                     continue
 
-                separated_columns = self._separate_columns(text=line_text)
+                # Split line's content
+                split_content = self._slice_columns(text=line_text)
 
+                # Concatenate this loop's content with the previous ones
                 dataframe = pd.concat(
                     [
                         dataframe,
                         pd.DataFrame(
-                            separated_columns,
+                            split_content,
                             index=[0]
                         )
                     ],
                     ignore_index=True
                 )
 
-                if line_row != 0 and line_row % batch_size == 0:
+                # Batch completion verification
+                if line_row != 0 and line_row % self.batch_size == 0:
                     print(f"Batch {line_row} completed!")
                     self.last_line_read = line_row
                     self.has_more = True
@@ -166,8 +208,8 @@ class ExtractionEngine:
             self.has_more = False
             return dataframe
 
-    def _separate_columns(self, text) -> dict:
-        """Slice text data and separate content appropriately."""
+    def _slice_columns(self, text) -> dict:
+        """Slice text data and split its content appropriately."""
         return {
             'tipo_de_registro': text[self.columns_separator['tipo_de_registro']],
             'data_pregao': text[self.columns_separator['data_pregao']],
