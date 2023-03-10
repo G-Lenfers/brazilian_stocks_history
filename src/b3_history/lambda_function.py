@@ -46,7 +46,18 @@ if __name__ == "__main__":
             "COTAHIST_A1987.zip",
             "COTAHIST_A1988.zip",
             "COTAHIST_A1989.zip",
-            "COTAHIST_A1990.zip"
+            "COTAHIST_A1990.zip",
+            "COTAHIST_A1991.zip",
+            "COTAHIST_A1992.zip",
+            "COTAHIST_A1993.zip",
+            "COTAHIST_A1994.zip",
+            "COTAHIST_A1995.zip",
+            "COTAHIST_A1996.zip",
+            "COTAHIST_A1997.zip",
+            "COTAHIST_A1998.zip",
+            "COTAHIST_A1999.zip",
+            "COTAHIST_A2000.zip",
+            "COTAHIST_A2001.zip",
         ]
     }
     lambda_handler(event=event)
