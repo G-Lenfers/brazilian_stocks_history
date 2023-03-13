@@ -7,6 +7,9 @@ def lambda_handler(event: any) -> None:
     # Instance main engine
     engine = MainEngine()
 
+    # TODO Create schema if exists
+    # TODO Catch permission denied errors
+
     # Set properties according to received event
     if event.get('batch_size'):
         engine.batch_size = event.get('batch_size')
@@ -35,6 +38,7 @@ def lambda_handler(event: any) -> None:
             # Execute extract, transform, and load processes
             engine.run_etl()
 
+    # TODO view that concatenates all tables
     pass
 
 
