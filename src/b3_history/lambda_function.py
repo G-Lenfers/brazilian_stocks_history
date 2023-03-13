@@ -58,6 +58,27 @@ if __name__ == "__main__":
             "COTAHIST_A1999.zip",
             "COTAHIST_A2000.zip",
             "COTAHIST_A2001.zip",
+            "COTAHIST_A2002.zip",
+            "COTAHIST_A2003.zip",
+            "COTAHIST_A2004.zip",
+            "COTAHIST_A2005.zip",
+            "COTAHIST_A2006.zip",
+            "COTAHIST_A2007.zip",
+            "COTAHIST_A2008.zip",
+            "COTAHIST_A2009.zip",
+            "COTAHIST_A2010.zip",
+            "COTAHIST_A2011.zip",
+            "COTAHIST_A2012.zip",
+            "COTAHIST_A2013.zip",
+            "COTAHIST_A2014.zip",
+            "COTAHIST_A2015.zip",
+            "COTAHIST_A2016.zip",
+            "COTAHIST_A2017.zip",
+            "COTAHIST_A2018.zip",
+            "COTAHIST_A2019.zip",
+            "COTAHIST_A2020.zip",
+            "COTAHIST_A2021.zip",
+            "COTAHIST_A2022.zip"
         ]
     }
     lambda_handler(event=event)
