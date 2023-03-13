@@ -51,6 +51,31 @@ class MainEngine(ExtractionEngine, TransformationEngine):
             table_name="extraction_progress"
         )
 
+    def create_update_view(self):
+        """"""
+        all_tables = [
+            'cotahist_a1986', 'cotahist_a1987', 'cotahist_a1988', 'cotahist_a1989', 'cotahist_a1990',
+            'cotahist_a1991', 'cotahist_a1992', 'cotahist_a1993', 'cotahist_a1994', 'cotahist_a1995',
+            'cotahist_a1996', 'cotahist_a1997', 'cotahist_a1998', 'cotahist_a1999', 'cotahist_a2000',
+            'cotahist_a2001', 'cotahist_a2002', 'cotahist_a2003', 'cotahist_a2004', 'cotahist_a2005',
+            'cotahist_a2006', 'cotahist_a2007', 'cotahist_a2008', 'cotahist_a2009', 'cotahist_a2010',
+            'cotahist_a2011', 'cotahist_a2012', 'cotahist_a2013', 'cotahist_a2014', 'cotahist_a2015',
+            'cotahist_a2016', 'cotahist_a2017', 'cotahist_a2018', 'cotahist_a2019', 'cotahist_a2020',
+            'cotahist_a2021', 'cotahist_a2022'
+        ]
+        for table in all_tables:
+
+            # Check its existence in datalake
+            # SELECT COUNT(*) FROM {schema}.{table}
+            # if count > 0 table is ok
+
+            # build query
+            # for every table ok, concatenate UNION ALL statement
+
+            pass
+
+        # execute query create or replace view
+
     def get_last_line_read_from_postgres(self) -> None:
         """Run a query to get file's last line read."""
         query = """
