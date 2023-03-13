@@ -12,8 +12,12 @@ class MainEngine(ExtractionEngine, TransformationEngine):
 
     def __init__(self):
         """Initialize constructor."""
+        # Extraction and Transformation engines inheritance
         super().__init__()
-        self.postgres = PostgresConnector(schema="b3_history")
+
+        # Postgres class composition
+        self.schema = "b3_history"
+        self.postgres = PostgresConnector(schema=self.schema)
 
     def run_etl(self) -> None:
         """Run main ETL method."""
