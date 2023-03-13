@@ -68,6 +68,8 @@ class MainEngine(ExtractionEngine, TransformationEngine):
             # Check its existence in datalake
             # SELECT COUNT(*) FROM {schema}.{table}
             # if count > 0 table is ok
+            rows = self.postgres.count_rows(table_name=table)
+            print(rows)
 
             # build query
             # for every table ok, concatenate UNION ALL statement

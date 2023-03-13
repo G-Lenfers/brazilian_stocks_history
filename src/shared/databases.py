@@ -26,11 +26,13 @@ class PostgresConnector:
         # Engine connection parameters
         self.dialect = 'postgresql'
         self.driver = 'psycopg2'
+        self.connection = None
         self.engine = None
 
     def _connect_to_database(self) -> None:
         """Connect to Postgres server."""
         self.connection = psycopg2.connect(
+            database=self.database,
             host=self.host,
             port=self.port,
             user=self.user,
@@ -74,6 +76,28 @@ class PostgresConnector:
 
         return dataframe
 
+    def count_rows(self, table_name: str) -> int:
+        """Check table existence by counting its row."""
+        self._connect_to_database()
+
+        with self.connection.cursor() as cursor:
+            statement = sql.SQL("""
+                SELECT
+                    count(*)
+                FROM
+                    b3_history.{table_name}
+            """).format(
+                table_name=sql.Identifier(table_name),
+            )
+            cursor.execute(statement)  # TODO try-except
+            result = cursor.fetchone()
+
+        self.close_connections()
+
+        row_count, = result
+        return row_count
+
     def close_connections(self) -> None:
         """Close all connections."""
         self.engine.dispose()
+        # TODO close psycopg2 connection
