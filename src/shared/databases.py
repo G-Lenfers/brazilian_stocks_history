@@ -2,6 +2,8 @@
 import os
 
 import pandas as pd
+import psycopg2
+from psycopg2 import sql
 from sqlalchemy import create_engine
 from sqlalchemy.exc import ProgrammingError
 
@@ -28,6 +30,13 @@ class PostgresConnector:
 
     def _connect_to_database(self) -> None:
         """Connect to Postgres server."""
+        self.connection = psycopg2.connect(
+            host=self.host,
+            port=self.port,
+            user=self.user,
+            password=self.password,
+        )
+
         self.engine = create_engine(
             f"{self.dialect}+{self.driver}://"
             f"{self.user}:{self.password}@"
