@@ -81,14 +81,20 @@ class PostgresConnector:
         # Create engine
         self._connect_to_database()
 
-        # Use engine to connect to database
-        with self.engine.connect() as connection:
+        try:
+            # Use engine to connect to database
+            with self.engine.connect() as connection:
 
-            # Execute and autocommit
-            connection.execute(statement)
+                # Execute and autocommit
+                connection.execute(statement)
 
-        # Dispose engine
-        self.close_connections()
+        except ProgrammingError as error:
+            # In case of InsufficientPrivilege error, we re-raise it to catch the original error
+            raise error.orig
+
+        finally:
+            # Dispose engine
+            self.close_connections()
 
     def count_rows(self, table_name: str) -> int:
         """Check table existence by counting its row."""

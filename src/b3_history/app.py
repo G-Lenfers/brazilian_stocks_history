@@ -1,4 +1,6 @@
 """File for orchestrating the ETL process of B3 stock history."""
+from psycopg2.errors import InsufficientPrivilege
+
 from src.b3_history.modules.main_engine import MainEngine
 
 
@@ -7,9 +9,15 @@ def lambda_handler(event: any) -> None:
     # Instance main engine
     engine = MainEngine()
 
-    # Create schema if it doesn't exist
-    engine.create_schema_if_not_exists()
-    # TODO Catch permission denied errors
+    # Schema setup
+    try:
+        engine.create_schema_if_not_exists()
+
+    except InsufficientPrivilege:
+        print("Insufficient privileges to execute create schema statement.\n"
+              "Please, configure a database user with CREATE permission.\n"
+              "Unable to continue works, stopping...")
+        return
 
     # Set properties according to received event
     if event.get('batch_size'):
