@@ -7,7 +7,8 @@ def lambda_handler(event: any) -> None:
     # Instance main engine
     engine = MainEngine()
 
-    # TODO Create schema if exists
+    # Create schema if it doesn't exist
+    engine.create_schema_if_not_exists()
     # TODO Catch permission denied errors
 
     # Set properties according to received event

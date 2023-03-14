@@ -76,6 +76,20 @@ class PostgresConnector:
 
         return dataframe
 
+    def execute_statement(self, statement):
+        """Execute and commit statement."""
+        # Create engine
+        self._connect_to_database()
+
+        # Use engine to connect to database
+        with self.engine.connect() as connection:
+
+            # Execute and autocommit
+            connection.execute(statement)
+
+        # Dispose engine
+        self.close_connections()
+
     def count_rows(self, table_name: str) -> int:
         """Check table existence by counting its row."""
         self._connect_to_database()
