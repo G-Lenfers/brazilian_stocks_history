@@ -120,4 +120,4 @@ class PostgresConnector:
     def close_connections(self) -> None:
         """Close all connections."""
         self.engine.dispose()
-        # TODO close psycopg2 connection
+        self.connection.close()
