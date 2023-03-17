@@ -96,26 +96,30 @@ class PostgresConnector:
             # Dispose engine
             self.close_connections()
 
-    def count_rows(self, table_name: str) -> int:
-        """Check table existence by counting its row."""
+    def check_table_existence(self, table_name: str) -> dict:
+        """Check if given table exists inside schema."""
         self._connect_to_database()
 
         with self.connection.cursor() as cursor:
             statement = sql.SQL("""
-                SELECT
-                    count(*)
-                FROM
-                    b3_history.{table_name}
+            SELECT EXISTS (
+                SELECT * FROM pg_catalog.pg_tables pt
+                WHERE pt.schemaname = {schema_name}
+                    AND pt.tablename = {table_name}
+            );
             """).format(
-                table_name=sql.Identifier(table_name),
+                schema_name=sql.Literal(self.schema),
+                table_name=sql.Literal(table_name)
             )
-            cursor.execute(statement)  # TODO try-except
+            # There is no need to put this execution inside try-except block
+            # Even without any privilege, one can still safely run this query
+            cursor.execute(statement)
             result = cursor.fetchone()
 
         self.close_connections()
 
-        row_count, = result
-        return row_count
+        table_exists, = result
+        return {table_name: table_exists}
 
     def close_connections(self) -> None:
         """Close all connections."""

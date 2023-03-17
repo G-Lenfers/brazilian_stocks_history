@@ -58,7 +58,7 @@ class MainEngine(ExtractionEngine, TransformationEngine):
         self.postgres.execute_statement(statement=statement)
 
     def create_update_view(self):
-        """"""
+        """Orchestrate the creation of the view that summarize all tables uploaded."""
         all_tables = [
             'cotahist_a1986', 'cotahist_a1987', 'cotahist_a1988', 'cotahist_a1989', 'cotahist_a1990',
             'cotahist_a1991', 'cotahist_a1992', 'cotahist_a1993', 'cotahist_a1994', 'cotahist_a1995',
@@ -69,13 +69,13 @@ class MainEngine(ExtractionEngine, TransformationEngine):
             'cotahist_a2016', 'cotahist_a2017', 'cotahist_a2018', 'cotahist_a2019', 'cotahist_a2020',
             'cotahist_a2021', 'cotahist_a2022'
         ]
+        table_existence = {}
         for table in all_tables:
 
             # Check its existence in datalake
-            # SELECT COUNT(*) FROM {schema}.{table}
-            # if count > 0 table is ok
-            rows = self.postgres.count_rows(table_name=table)
-            print(rows)
+            table_existence.update(
+                self.postgres.check_table_existence(table_name=table)
+            )
 
             # build query
             # for every table ok, concatenate UNION ALL statement
