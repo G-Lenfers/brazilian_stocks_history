@@ -69,20 +69,33 @@ class MainEngine(ExtractionEngine, TransformationEngine):
             'cotahist_a2016', 'cotahist_a2017', 'cotahist_a2018', 'cotahist_a2019', 'cotahist_a2020',
             'cotahist_a2021', 'cotahist_a2022'
         ]
-        table_existence = {}
+        table_existence_check = []
         for table in all_tables:
 
             # Check its existence in datalake
-            table_existence.update(
+            table_existence_check.append(
                 self.postgres.check_table_existence(table_name=table)
             )
 
-            # build query
-            # for every table ok, concatenate UNION ALL statement
+        existent_tables = [
+            table_name
+            for table in table_existence_check
+            for table_name, exists in table.items()
+            if exists
+        ]
 
-            pass
+        # It would be weird arrive here with no table uploaded, but check it anyway
+        if not existent_tables:
+            return
 
-        # execute query create or replace view
+        # build query
+        query_header = "CREATE OR REPLACE VIEW stock_history_summary SELECT * FROM "
+
+        # for every table ok, concatenate UNION ALL statement
+        middle_query = "\nUNION ALL\n SELECT * FROM "
+
+        # execute query
+        pass
 
     def get_last_line_read_from_postgres(self) -> None:
         """Run a query to get file's last line read."""
