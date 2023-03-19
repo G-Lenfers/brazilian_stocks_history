@@ -22,7 +22,10 @@ def lambda_handler(event: any) -> None:
 
     # Set properties according to received event
     if event.get('batch_size'):
-        engine.batch_size = event.get('batch_size')
+        engine.batch_size = event['batch_size']
+
+    if event.get('schema'):
+        engine.schema = event['schema']
 
     # Loop through list of files
     for file in event.get('files_to_run'):

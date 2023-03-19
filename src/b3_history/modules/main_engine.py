@@ -16,8 +16,30 @@ class MainEngine(ExtractionEngine, TransformationEngine):
         super().__init__()
 
         # Postgres class composition
-        self.schema = "b3_history"
+        self._schema = "b3_history"
         self.postgres = PostgresConnector(schema=self.schema)
+
+    @property
+    def schema(self) -> str:
+        """Access attribute value."""
+        return self._schema
+
+    @schema.setter
+    def schema(self, schema_name: str) -> None:
+        """Define property setter and validate inputted file name."""
+        if not isinstance(schema_name, str):
+            raise TypeError(f"Invalid type {type(schema_name)} for schema name.")
+
+        # Avoid SQL injection in schema name
+        prohibited_characters = ['"', '.', '-', ';']
+        if any([
+            prohibited_character in schema_name
+            for prohibited_character in prohibited_characters
+        ]):
+            raise ValueError("Prohibited characters found in schema name!")
+
+        self._schema = schema_name
+        self.postgres.schema = schema_name
 
     def run_etl(self) -> None:
         """Run main ETL method."""
