@@ -124,6 +124,7 @@ class MainEngine(ExtractionEngine, TransformationEngine):
 
         # execute
         self.postgres.execute_statement(statement=complete_statement)
+        print("Created view successfully!")
 
     def get_last_line_read_from_postgres(self) -> None:
         """Run a query to get file's last line read."""

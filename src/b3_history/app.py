@@ -51,9 +51,8 @@ def lambda_handler(event: any) -> None:
             # Execute extract, transform, and load processes
             engine.run_etl()
 
-    # TODO view that concatenates all tables
-    # pass
     engine.create_update_view()
+    print("All done!")
 
 
 if __name__ == "__main__":
