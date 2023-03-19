@@ -9,6 +9,13 @@ def lambda_handler(event: any) -> None:
     # Instance main engine
     engine = MainEngine()
 
+    # Set properties according to received event
+    if event.get('batch_size'):
+        engine.batch_size = event['batch_size']
+
+    if event.get('schema'):
+        engine.schema = event['schema']
+
     # Schema setup
     try:
         engine.create_schema_if_not_exists()
@@ -19,13 +26,6 @@ def lambda_handler(event: any) -> None:
               "Please, configure a database user with CREATE permission.\n"
               "Unable to continue works, stopping...")
         return
-
-    # Set properties according to received event
-    if event.get('batch_size'):
-        engine.batch_size = event['batch_size']
-
-    if event.get('schema'):
-        engine.schema = event['schema']
 
     # Loop through list of files
     for file in event.get('files_to_run'):
