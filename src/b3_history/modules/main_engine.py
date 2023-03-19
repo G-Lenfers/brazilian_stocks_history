@@ -80,17 +80,21 @@ class MainEngine(ExtractionEngine, TransformationEngine):
         self.postgres.execute_statement(statement=statement)
 
     def create_update_view(self):
-        """Orchestrate the creation of the view that summarize all tables uploaded."""
+        """
+        Orchestrate the creation of the view that aggregates all tables uploaded.
+
+        Since there is no user input, we should be safe against SQL injection.
+        This view will concatenate every existing table in schema.
+        """
         all_years = range(1986, 2023)
         all_tables = [
             "cotahist_a" + str(year)
             for year in all_years
         ]
 
+        # Check which tables exist in datalake
         table_existence_check = []
         for table in all_tables:
-
-            # Check its existence in datalake
             table_existence_check.append(
                 self.postgres.check_table_existence(table_name=table)
             )
@@ -102,15 +106,23 @@ class MainEngine(ExtractionEngine, TransformationEngine):
             if exists
         ]
 
-        # It would be weird arrive here with no table uploaded, but check it anyway
+        # It would be quite weird to arrive here with no table uploaded, but let's check it anyway
         if not existent_tables:
             return
 
-        # build query
-        query_header = "CREATE OR REPLACE VIEW stock_history_summary SELECT * FROM "
+        # build SQL statement by concatenating tables with UNION ALL
+        statement_header = f"""
+            CREATE OR REPLACE VIEW stocks_history
+            SELECT * FROM {self.schema}.{existent_tables.pop(0)}
+        """
 
-        # for every table ok, concatenate UNION ALL statement
-        middle_query = "\nUNION ALL\n SELECT * FROM "
+        union_statement = "\nUNION ALL\n SELECT * FROM "
+        remaining_statement = [
+            union_statement + table
+            for table in existent_tables
+        ]
+
+        complete_statement = statement_header + ''.join(remaining_statement)
 
         # execute query
         pass
