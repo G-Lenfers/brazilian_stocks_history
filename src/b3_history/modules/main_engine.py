@@ -111,12 +111,10 @@ class MainEngine(ExtractionEngine, TransformationEngine):
             return
 
         # build SQL statement by concatenating tables with UNION ALL
-        statement_header = f"""
-            CREATE OR REPLACE VIEW stocks_history
-            SELECT * FROM {self.schema}.{existent_tables.pop(0)}
-        """
+        statement_header = f"CREATE OR REPLACE VIEW {self.schema}.stocks_history AS\n" \
+                           f"SELECT * FROM {self.schema}.{existent_tables.pop(0)}"
 
-        union_statement = "\nUNION ALL\n SELECT * FROM "
+        union_statement = f"\nUNION ALL\n SELECT * FROM {self.schema}."
         remaining_statement = [
             union_statement + table
             for table in existent_tables
@@ -124,8 +122,8 @@ class MainEngine(ExtractionEngine, TransformationEngine):
 
         complete_statement = statement_header + ''.join(remaining_statement)
 
-        # execute query
-        pass
+        # execute
+        self.postgres.execute_statement(statement=complete_statement)
 
     def get_last_line_read_from_postgres(self) -> None:
         """Run a query to get file's last line read."""
