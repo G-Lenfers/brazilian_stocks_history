@@ -111,7 +111,7 @@ class MainEngine(ExtractionEngine, TransformationEngine):
             return
 
         # build SQL statement by concatenating tables with UNION ALL
-        statement_header = f"CREATE OR REPLACE VIEW {self.schema}.stocks_history AS\n" \
+        statement_header = f"CREATE MATERIALIZED VIEW IF NOT EXISTS {self.schema}.stocks_history AS\n" \
                            f"SELECT * FROM {self.schema}.{existent_tables.pop(0)}"
 
         union_statement = f"\nUNION ALL\n SELECT * FROM {self.schema}."
