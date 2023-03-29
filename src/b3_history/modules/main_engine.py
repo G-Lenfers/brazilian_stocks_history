@@ -4,7 +4,7 @@ from psycopg2.errors import UndefinedTable
 
 from src.b3_history.modules.extraction_engine import ExtractionEngine
 from src.b3_history.modules.transformation_engine import TransformationEngine
-from src.shared.databases import PostgresConnector
+from src.shared.loading_engine import PostgresConnector
 
 
 class MainEngine(ExtractionEngine, TransformationEngine):
