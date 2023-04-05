@@ -1,6 +1,10 @@
 """Filter specific ticket data and upload it to data warehouse."""
 
 
+def lambda_function(event: list) -> None:
+    """Orchestrate accordingly."""
+
+
 if __name__ == "__main__":
     event = [
         {
@@ -12,3 +16,4 @@ if __name__ == "__main__":
             "optional_old_ticket_name": "PET 3"
         }
     ]
+    lambda_function(event=event)
