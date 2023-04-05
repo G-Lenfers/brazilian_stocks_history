@@ -96,6 +96,21 @@ class PostgresConnector:
             # Dispose engine
             self.close_connections()
 
+    def create_schema_database(self) -> None:
+        """Execute schema creation statement."""
+        self._connect_to_database()
+        self.connection.set_session(autocommit=True)
+
+        with self.connection.cursor() as cursor:
+            statement = sql.SQL("""
+                CREATE SCHEMA IF NOT EXISTS {schema_name}
+            """).format(
+                schema_name=sql.Identifier(self.schema)
+            )
+            cursor.execute(statement)
+
+        self.close_connections()
+
     def check_table_existence(self, table_name: str) -> dict:
         """Check if given table exists inside schema."""
         self._connect_to_database()

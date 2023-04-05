@@ -1,8 +1,14 @@
 """Filter specific ticket data and upload it to data warehouse."""
+import pandas as pd
+
+from src.shared.loading_engine import PostgresConnector
 
 
 def lambda_function(event: list) -> None:
     """Orchestrate accordingly."""
+    # Basic postgres setup
+    postgres = PostgresConnector(schema="data_warehouse")
+    postgres.create_schema_database()
 
 
 if __name__ == "__main__":
