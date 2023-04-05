@@ -73,12 +73,6 @@ class MainEngine(ExtractionEngine, TransformationEngine):
             table_name="extraction_progress"
         )
 
-    def create_schema_if_not_exists(self):
-        """Execute statement to create schema if it doesn't exist."""
-        # TODO, schema name could be class property. But have a look into how to avoid SQL injection in this transaction
-        statement = "CREATE SCHEMA IF NOT EXISTS b3_history;"
-        self.postgres.execute_statement(statement=statement)
-
     def create_update_view(self):
         """
         Orchestrate the creation of the view that aggregates all tables uploaded.

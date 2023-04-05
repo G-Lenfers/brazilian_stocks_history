@@ -18,10 +18,9 @@ def lambda_handler(event: any) -> None:
 
     # Schema setup
     try:
-        engine.create_schema_if_not_exists()
+        engine.postgres.create_schema_database()
 
     except InsufficientPrivilege:
-        # TODO even if transaction fails, it could continue on if schema already exists
         print("Insufficient privileges to execute create schema statement.\n"
               "Please, configure a database user with CREATE permission.\n"
               "Unable to continue works, stopping...")
