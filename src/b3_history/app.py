@@ -21,6 +21,7 @@ def lambda_handler(event: any) -> None:
         engine.postgres.create_schema_database()
 
     except InsufficientPrivilege:
+        engine.postgres.close_connections()
         print("Insufficient privileges to execute create schema statement.\n"
               "Please, configure a database user with CREATE permission.\n"
               "Unable to continue works, stopping...")
