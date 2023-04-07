@@ -26,7 +26,7 @@ class DataLakeMainEngine(ExtractionEngine, TransformationEngine):
 
     @schema.setter
     def schema(self, schema_name: str) -> None:
-        """Define property setter and validate inputted file name."""
+        """Define property setter and validate inputted schema name."""
         if not isinstance(schema_name, str):
             raise TypeError(f"Invalid type {type(schema_name)} for schema name.")
 
