@@ -1,4 +1,4 @@
-"""Filter specific ticket data and upload it to data warehouse."""
+"""Filter specific ticket data from datalake and upload it to data warehouse."""
 import pandas as pd
 
 from src.shared.loading_engine import PostgresConnector
@@ -8,7 +8,28 @@ def lambda_function(event: list) -> None:
     """Orchestrate accordingly."""
     # Basic postgres setup
     postgres = PostgresConnector(schema="data_warehouse")
-    postgres.create_schema_database()
+    postgres.create_schema_database()  # must have 'create' privilege
+
+    # Extract
+    # TODO Check view existence
+    # TODO schema name as parameter from event
+    data_lake_extraction_query = """
+        SELECT
+            sh.data_pregao,
+            sh.codigo_negociaco_papel,
+            sh.nome_resumido,
+            sh.moeda_referencia,
+            sh.preco_abertura_pregao,
+            sh.preco_ultimo_negocio,
+            sh.preco_maximo_pregao,
+            sh.preco_minimo_pregao
+        FROM b3_history.stocks_history sh 
+        WHERE sh.tipo_de_mercado = '010'
+            -- AND (sh.codigo_negociaco_papel = %(ticket_name)s
+            -- OR sh.codigo_negociaco_papel = 'VAL 3')
+        -- ORDER BY data_pregao ASC
+    """  # TODO order by in pandas, not in query
+    # TODO where condition separated
 
 
 if __name__ == "__main__":
