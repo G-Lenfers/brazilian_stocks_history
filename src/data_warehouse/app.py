@@ -113,12 +113,12 @@ def lambda_function(event: dict) -> None:
     # Instance main engine
     engine = DataWarehouseMainEngine()
 
-    # Datalake schema verification
+    # Data Lake schema verification
     # TODO Check view existence
 
     # Data Warehouse schema setup
-    if event.get('schema'):
-        engine.schema = event['schema']
+    if event.get('data_warehouse_schema'):
+        engine.schema = event['data_warehouse_schema']
     else:
         engine.schema = "data_warehouse"
     engine.postgres.create_schema_database()  # must have 'create' privilege
@@ -140,7 +140,7 @@ def lambda_function(event: dict) -> None:
 
 if __name__ == "__main__":
     event = {
-        "schema": "dw",  # there is a default value if this one is not provided
+        "data_warehouse_schema": "dw",  # there is a default value if this one is not provided
         "datalake_schema": "b3_history",
         "stocks": [
             {
