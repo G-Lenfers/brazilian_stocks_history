@@ -10,6 +10,7 @@ class DataWarehouseMainEngine:
     def __init__(self):
         """Initialize constructor."""
         self._schema = "data_warehouse"  # default value, but can be overwritten with event parameter
+        self._datalake_schema = "b3_history"  # default value, but can be overwritten with event parameter
         self.postgres = PostgresConnector(schema=self._schema)
 
     @property
@@ -20,19 +21,34 @@ class DataWarehouseMainEngine:
     @schema.setter
     def schema(self, schema_name: str) -> None:
         """Define property setter and validate inputted schema name."""
+        self._validate_schema_name(schema_name=schema_name)
+        self._schema = schema_name
+        self.postgres.schema = schema_name
+
+    @property
+    def data_lake_schema(self):
+        """Access attribute value."""
+        return self._datalake_schema
+
+    @data_lake_schema.setter
+    def data_lake_schema(self, schema_name: str) -> None:
+        """Define property setter and validate inputted schema name."""
+        self._validate_schema_name(schema_name=schema_name)
+        self._datalake_schema = schema_name
+
+    @staticmethod
+    def _validate_schema_name(schema_name: str) -> None:
+        """Validate schema name in order to avoid SQL injection."""
         if not isinstance(schema_name, str):
             raise TypeError(f"Invalid type {type(schema_name)} for schema name.")
 
         # Avoid SQL injection in schema name
-        prohibited_characters = ['"', '.', '-', ';']
+        prohibited_characters = ["'", '"', '.', '-', ';']
         if any([
             prohibited_character in schema_name
             for prohibited_character in prohibited_characters
         ]):
             raise ValueError("Prohibited characters found in schema name!")
-
-        self._schema = schema_name
-        self.postgres.schema = schema_name
 
     def extract_data_lake(self, stock: dict) -> pd.DataFrame:
         """Get ticket data from Data Lake."""
@@ -46,7 +62,7 @@ class DataWarehouseMainEngine:
                 sh.preco_ultimo_negocio,
                 sh.preco_maximo_pregao,
                 sh.preco_minimo_pregao
-            FROM {self.schema}.stocks_history sh 
+            FROM {self.data_lake_schema}.stocks_history sh 
             WHERE sh.tipo_de_mercado = '010'
         """
 
@@ -94,12 +110,12 @@ def lambda_function(event: dict) -> None:
     # Instance main engine
     engine = DataWarehouseMainEngine()
 
+    # Datalake schema verification
     # TODO Check view existence
 
-    # Set properties according to received event
+    # Data Warehouse schema setup
     if event.get('schema'):
         engine.schema = event['schema']
-
     engine.postgres.create_schema_database()  # must have 'create' privilege
 
     for stock in event.get('stocks'):
@@ -119,7 +135,8 @@ def lambda_function(event: dict) -> None:
 
 if __name__ == "__main__":
     event = {
-        "schema": "DW",
+        "schema": "dw",  # there is a default value if this one is not provided
+        "datalake_schema": "b3_history",
         "stocks": [
             {
                 "ticket_name": "VALE3",
