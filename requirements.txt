@@ -5,3 +5,4 @@ SQLAlchemy==1.4.46
 yfinance==0.2.3
 flake8==6.0.0
 isort==5.11.4
+matplotlib==3.7.1
