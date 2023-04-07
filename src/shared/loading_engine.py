@@ -11,7 +11,7 @@ from sqlalchemy.exc import ProgrammingError
 class PostgresConnector:
     """Class for uploading data to Postgres."""
 
-    def __init__(self, schema: str) -> None:
+    def __init__(self, schema: str = "") -> None:
         """Initialize the constructor."""
         # Database parameter
         self.schema = schema
@@ -135,6 +135,32 @@ class PostgresConnector:
 
         table_exists, = result
         return {table_name: table_exists}
+
+    def check_materialized_view_existence(self, view_name: str) -> dict:
+        """Check if given materialized view exists inside schema."""
+        self._connect_to_database()
+
+        with self.connection.cursor() as cursor:
+            statement = sql.SQL("""
+            SELECT EXISTS (
+                SELECT *
+                FROM pg_catalog.pg_matviews pm 
+                WHERE pm.schemaname = {schema_name}
+                    AND pm.matviewname = {view_name}
+            );
+            """).format(
+                schema_name=sql.Literal(self.schema),
+                view_name=sql.Literal(view_name)
+            )
+            # There is no need to put this execution inside try-except block
+            # Even without any privilege, one can still safely run this query
+            cursor.execute(statement)
+            result = cursor.fetchone()
+
+        self.close_connections()
+
+        view_exists, = result
+        return view_exists
 
     def close_connections(self) -> None:
         """Close all connections."""
