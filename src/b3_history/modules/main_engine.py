@@ -16,7 +16,7 @@ class DataLakeMainEngine(ExtractionEngine, TransformationEngine):
         super().__init__()
 
         # Postgres class composition
-        self._schema = "b3_history"
+        self._schema = "b3_history"  # default value, but can be overwritten with event parameter
         self.postgres = PostgresConnector(schema=self.schema)
 
     @property
