@@ -9,14 +9,34 @@ class DataWarehouseMainEngine:
 
     def __init__(self):
         """Initialize constructor."""
-        self.schema = "data_warehouse"
-        self.postgres = PostgresConnector(schema=self.schema)
+        self._schema = "data_warehouse"  # default value, but can be overwritten with event parameter
+        self.postgres = PostgresConnector(schema=self._schema)
+
+    @property
+    def schema(self):
+        """Access attribute value."""
+        return self._schema
+
+    @schema.setter
+    def schema(self, schema_name: str) -> None:
+        """Define property setter and validate inputted schema name."""
+        if not isinstance(schema_name, str):
+            raise TypeError(f"Invalid type {type(schema_name)} for schema name.")
+
+        # Avoid SQL injection in schema name
+        prohibited_characters = ['"', '.', '-', ';']
+        if any([
+            prohibited_character in schema_name
+            for prohibited_character in prohibited_characters
+        ]):
+            raise ValueError("Prohibited characters found in schema name!")
+
+        self._schema = schema_name
+        self.postgres.schema = schema_name
 
     def extract_data_lake(self, stock: dict) -> pd.DataFrame:
         """Get ticket data from Data Lake."""
-        # TODO Check view existence
-        # TODO schema name as parameter from event
-        data_lake_extraction_query = """
+        data_lake_extraction_query = f"""
             SELECT
                 sh.data_pregao,
                 sh.codigo_negociaco_papel,
@@ -26,7 +46,7 @@ class DataWarehouseMainEngine:
                 sh.preco_ultimo_negocio,
                 sh.preco_maximo_pregao,
                 sh.preco_minimo_pregao
-            FROM b3_history.stocks_history sh 
+            FROM {self.schema}.stocks_history sh 
             WHERE sh.tipo_de_mercado = '010'
         """
 
@@ -69,14 +89,20 @@ class DataWarehouseMainEngine:
         )
 
 
-def lambda_function(event: list) -> None:
+def lambda_function(event: dict) -> None:
     """Orchestrate accordingly."""
     # Instance main engine
     engine = DataWarehouseMainEngine()
 
+    # TODO Check view existence
+
+    # Set properties according to received event
+    if event.get('schema'):
+        engine.schema = event['schema']
+
     engine.postgres.create_schema_database()  # must have 'create' privilege
 
-    for stock in event:
+    for stock in event.get('stocks'):
 
         # Extract
         extracted_ticket_data = engine.extract_data_lake(stock=stock)
@@ -92,14 +118,17 @@ def lambda_function(event: list) -> None:
 
 
 if __name__ == "__main__":
-    event = [
-        {
-            "ticket_name": "VALE3",
-            "optional_old_ticket_name": "VAL 3"
-        },
-        {
-            "ticket_name": "PETR3",
-            "optional_old_ticket_name": "PET 3"
-        }
-    ]
+    event = {
+        "schema": "DW",
+        "stocks": [
+            {
+                "ticket_name": "VALE3",
+                "optional_old_ticket_name": "VAL 3"
+            },
+            {
+                "ticket_name": "PETR3",
+                "optional_old_ticket_name": "PET 3"
+            }
+        ]
+    }
     lambda_function(event=event)
