@@ -51,7 +51,10 @@ def lambda_function(event: list) -> None:
             query_parameters = {
                 "ticket_name": stock.get('ticket_name'),
             }
-
+        extracted_ticket_data = postgres.read_sql_query(
+            query=data_lake_extraction_query+query_conditional,
+            params=query_parameters
+        )
 
 
 
