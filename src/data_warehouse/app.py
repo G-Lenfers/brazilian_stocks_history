@@ -38,7 +38,10 @@ def lambda_function(event: dict) -> None:
 
         # Load
         print("Uploading to Data Warehouse... ", end="")
-        engine.postgres.upload_data(dataframe=ticket_data, table_name=stock.get('ticket_name'))
+        engine.postgres.upload_data(
+            dataframe=ticket_data,
+            table_name=stock.get('ticket_name').lower()
+        )
         print("Upload complete!")
 
 
