@@ -7,8 +7,9 @@ from src.shared.loading_engine import PostgresConnector
 
 def lambda_handler(event: any) -> None:
     """Handle the event and call the appropriate methods."""
-    # Instance postgres connection
+    # Instance postgres connection and create schema
     postgres = PostgresConnector(schema='yahoo_finance')
+    postgres.create_schema_database()
 
     # Cycle through received stocks
     stocks = event.get("stocks")
