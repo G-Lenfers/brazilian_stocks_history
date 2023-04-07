@@ -11,7 +11,7 @@ def lambda_function(event: dict) -> None:
     if event.get('datalake_schema'):
         engine.data_lake_schema = event['datalake_schema']
     else:
-        engine.data_lake_schema = "b3_history"
+        engine.data_lake_schema = "b3_history"  # default value if not provided
 
     view_exists = engine.postgres.check_materialized_view_existence(view_name="stocks_history")
     if not view_exists:
@@ -22,7 +22,7 @@ def lambda_function(event: dict) -> None:
     if event.get('data_warehouse_schema'):
         engine.data_warehouse_schema = event['data_warehouse_schema']
     else:
-        engine.data_warehouse_schema = "data_warehouse"
+        engine.data_warehouse_schema = "data_warehouse"  # default value if not provided
     engine.postgres.create_schema_database()  # must have 'create' privilege
 
     for stock in event.get('stocks'):
@@ -44,7 +44,7 @@ def lambda_function(event: dict) -> None:
 
 if __name__ == "__main__":
     event = {
-        "data_warehouse_schema": "dw",  # there is a default value if this one is not provided
+        "data_warehouse_schema": "data_warehouse",
         "datalake_schema": "b3_history",
         "stocks": [
             {
