@@ -5,14 +5,20 @@ from src.shared.loading_engine import PostgresConnector
 
 
 class DataWarehouseMainEngine:
-    """"""
+    """Main class for extraction ticket price data from Data Lake, and uploading it to Data Warehouse."""
+
+    def __init__(self):
+        """Initialize constructor."""
+        self.schema = "data_warehouse"
+        self.postgres = PostgresConnector(schema=self.schema)
 
 
 def lambda_function(event: list) -> None:
     """Orchestrate accordingly."""
-    # Basic postgres setup
-    postgres = PostgresConnector(schema="data_warehouse")
-    postgres.create_schema_database()  # must have 'create' privilege
+    # Instance main engine
+    engine = DataWarehouseMainEngine()
+
+    engine.postgres.create_schema_database()  # must have 'create' privilege
 
     # Extract
     # TODO Check view existence
@@ -55,7 +61,7 @@ def lambda_function(event: list) -> None:
             query_parameters = {
                 "ticket_name": stock.get('ticket_name'),
             }
-        extracted_ticket_data = postgres.read_sql_query(
+        extracted_ticket_data = engine.postgres.read_sql_query(
             query=data_lake_extraction_query+query_conditional,
             params=query_parameters
         )
