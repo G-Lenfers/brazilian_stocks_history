@@ -28,8 +28,7 @@ class DataWarehouseMainEngine:
                 sh.preco_minimo_pregao
             FROM b3_history.stocks_history sh 
             WHERE sh.tipo_de_mercado = '010'
-            -- ORDER BY data_pregao ASC
-        """  # TODO order by in pandas, not in query
+        """
 
         if not stock.get('ticket_name'):
             print('Main ticket name is mandatory. Skipping...')
@@ -60,6 +59,14 @@ class DataWarehouseMainEngine:
         )
         return extracted_ticket_data
 
+    @staticmethod
+    def transform_dataframe(dataframe: pd.DataFrame) -> pd.DataFrame:
+        """Order dataframe values by date."""
+        return dataframe.sort_values(
+            by=['data_pregao'],
+            ascending=True,
+            ignore_index=True
+        )
 
 
 def lambda_function(event: list) -> None:
@@ -73,6 +80,15 @@ def lambda_function(event: list) -> None:
 
         # Extract
         extracted_ticket_data = engine.extract_data_lake(stock=stock)
+
+        if len(extracted_ticket_data) == 0:
+            continue
+
+        # Transform
+        ticket_data = engine.transform_dataframe(dataframe=extracted_ticket_data)
+
+        # Load
+        engine.postgres.upload_data(dataframe=ticket_data, table_name=stock.get('ticket_name'))
 
 
 if __name__ == "__main__":
