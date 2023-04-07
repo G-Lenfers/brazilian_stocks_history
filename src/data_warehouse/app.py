@@ -119,6 +119,8 @@ def lambda_function(event: dict) -> None:
     # Data Warehouse schema setup
     if event.get('schema'):
         engine.schema = event['schema']
+    else:
+        engine.schema = "data_warehouse"
     engine.postgres.create_schema_database()  # must have 'create' privilege
 
     for stock in event.get('stocks'):
