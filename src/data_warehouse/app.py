@@ -37,7 +37,9 @@ def lambda_function(event: dict) -> None:
         ticket_data = engine.transform_dataframe(dataframe=extracted_ticket_data)
 
         # Load
+        print("Uploading to Data Warehouse... ", end="")
         engine.postgres.upload_data(dataframe=ticket_data, table_name=stock.get('ticket_name'))
+        print("Upload complete!")
 
 
 if __name__ == "__main__":

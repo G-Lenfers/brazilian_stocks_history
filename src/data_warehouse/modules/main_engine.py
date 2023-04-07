@@ -96,10 +96,12 @@ class DataWarehouseMainEngine:
                 "ticket_name": stock.get('ticket_name'),
             }
 
+        print(f"Extracting {stock.get('ticket_name')} from Data Lake... ", end="")
         extracted_ticket_data = self.postgres.read_sql_query(
             query=data_lake_extraction_query+query_conditional,
             params=query_parameters
         )
+        print("Extraction complete!")
         return extracted_ticket_data
 
     @staticmethod
