@@ -39,6 +39,10 @@ class DataWarehouseMainEngine:
         self._validate_schema_name(schema_name=schema_name)
         self._datalake_schema = schema_name
 
+        # First query will be run inside data lake schema
+        # Later, this property will be overwritten with data warehouse schema name
+        self.postgres.schema = schema_name
+
     @staticmethod
     def _validate_schema_name(schema_name: str) -> None:
         """Validate schema name in order to avoid SQL injection."""

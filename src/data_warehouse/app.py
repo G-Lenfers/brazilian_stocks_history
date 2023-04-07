@@ -8,13 +8,21 @@ def lambda_function(event: dict) -> None:
     engine = DataWarehouseMainEngine()
 
     # Data Lake schema verification
-    # TODO Check view existence
+    if event.get('datalake_schema'):
+        engine.data_lake_schema = event['datalake_schema']
+    else:
+        engine.data_lake_schema = "b3_history"
+
+    view_exists = engine.postgres.check_materialized_view_existence(view_name="stocks_history")
+    if not view_exists:
+        print("This app is supposed to run only after the creation of data lake materialized view.")
+        return
 
     # Data Warehouse schema setup
     if event.get('data_warehouse_schema'):
-        engine.schema = event['data_warehouse_schema']
+        engine.data_warehouse_schema = event['data_warehouse_schema']
     else:
-        engine.schema = "data_warehouse"
+        engine.data_warehouse_schema = "data_warehouse"
     engine.postgres.create_schema_database()  # must have 'create' privilege
 
     for stock in event.get('stocks'):
