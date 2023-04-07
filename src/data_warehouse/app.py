@@ -25,11 +25,34 @@ def lambda_function(event: list) -> None:
             sh.preco_minimo_pregao
         FROM b3_history.stocks_history sh 
         WHERE sh.tipo_de_mercado = '010'
-            -- AND (sh.codigo_negociaco_papel = %(ticket_name)s
-            -- OR sh.codigo_negociaco_papel = 'VAL 3')
         -- ORDER BY data_pregao ASC
     """  # TODO order by in pandas, not in query
-    # TODO where condition separated
+    for stock in event:
+
+        if not stock.get('ticket_name'):
+            print('Main ticket name is mandatory. Skipping...')
+            continue
+
+        if stock.get('optional_old_ticket_name'):
+            query_conditional = """
+                AND (
+                    sh.codigo_negociaco_papel = %(ticket_name)s
+                    OR sh.codigo_negociaco_papel = %(old_ticket_name)s
+                )
+            """
+            query_parameters = {
+                "ticket_name": stock.get('ticket_name'),
+                "old_ticket_name": stock.get('optional_old_ticket_name')
+            }
+        else:
+            query_conditional = """
+                AND sh.codigo_negociaco_papel = %(ticket_name)s
+            """
+            query_parameters = {
+                "ticket_name": stock.get('ticket_name'),
+            }
+
+
 
 
 if __name__ == "__main__":
