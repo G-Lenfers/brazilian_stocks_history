@@ -4,6 +4,10 @@ import pandas as pd
 from src.shared.loading_engine import PostgresConnector
 
 
+class DataWarehouseMainEngine:
+    """"""
+
+
 def lambda_function(event: list) -> None:
     """Orchestrate accordingly."""
     # Basic postgres setup

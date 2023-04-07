@@ -7,7 +7,7 @@ from src.b3_history.modules.transformation_engine import TransformationEngine
 from src.shared.loading_engine import PostgresConnector
 
 
-class MainEngine(ExtractionEngine, TransformationEngine):
+class DataLakeMainEngine(ExtractionEngine, TransformationEngine):
     """Main class for reading zipped file, transform the dataframe and upload data to postgres."""
 
     def __init__(self):
@@ -128,7 +128,7 @@ class MainEngine(ExtractionEngine, TransformationEngine):
             WHERE file_name = %(file_name)s
             ORDER BY last_line_read DESC
             LIMIT 1;
-        """
+        """  # TODO schema parameter
         query_parameter = {'file_name': self.file_name}
 
         try:
