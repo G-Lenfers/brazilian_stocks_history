@@ -9,20 +9,23 @@ class DataWarehouseMainEngine:
 
     def __init__(self):
         """Initialize constructor."""
-        self._schema = "data_warehouse"  # default value, but can be overwritten with event parameter
-        self._datalake_schema = "b3_history"  # default value, but can be overwritten with event parameter
-        self.postgres = PostgresConnector(schema=self._schema)
+        # Initially declare loading engine's schema as empty, will be updating as we go through
+        self.postgres = PostgresConnector()
+
+        # Schema default names
+        self._data_warehouse_schema = "data_warehouse"  # can be overwritten with event parameter
+        self._datalake_schema = "b3_history"  # can be overwritten with event parameter
 
     @property
-    def schema(self):
+    def data_warehouse_schema(self):
         """Access attribute value."""
-        return self._schema
+        return self._data_warehouse_schema
 
-    @schema.setter
-    def schema(self, schema_name: str) -> None:
+    @data_warehouse_schema.setter
+    def data_warehouse_schema(self, schema_name: str) -> None:
         """Define property setter and validate inputted schema name."""
         self._validate_schema_name(schema_name=schema_name)
-        self._schema = schema_name
+        self._data_warehouse_schema = schema_name
         self.postgres.schema = schema_name
 
     @property
