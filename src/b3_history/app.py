@@ -1,13 +1,13 @@
 """File for orchestrating the ETL process of B3 stock history."""
 from psycopg2.errors import InsufficientPrivilege
 
-from src.b3_history.modules.main_engine import MainEngine
+from src.b3_history.modules.main_engine import DataLakeMainEngine
 
 
 def lambda_handler(event: any) -> None:
     """Orchestrate the workflow."""
     # Instance main engine
-    engine = MainEngine()
+    engine = DataLakeMainEngine()
 
     # Set properties according to received event
     if event.get('batch_size'):
