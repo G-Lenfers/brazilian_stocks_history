@@ -31,7 +31,8 @@ class DataLakeMainEngine(ExtractionEngine, TransformationEngine):
             raise TypeError(f"Invalid type {type(schema_name)} for schema name.")
 
         # Avoid SQL injection in schema name
-        prohibited_characters = ['"', '.', '-', ';']
+        schema_name = "".join(schema_name.split())  # Remove whitespaces, new lines, ...
+        prohibited_characters = ["'", '"', '.', '-', ';']
         if any([
             prohibited_character in schema_name
             for prohibited_character in prohibited_characters
@@ -122,13 +123,14 @@ class DataLakeMainEngine(ExtractionEngine, TransformationEngine):
 
     def get_last_line_read_from_postgres(self) -> None:
         """Run a query to get file's last line read."""
-        query = """
+        # Although schema name is user input, it has already been validated against prohibited characters
+        query = f"""
             SELECT *
-            FROM b3_history.extraction_progress
+            FROM {self.schema}.extraction_progress
             WHERE file_name = %(file_name)s
             ORDER BY last_line_read DESC
             LIMIT 1;
-        """  # TODO schema parameter
+        """
         query_parameter = {'file_name': self.file_name}
 
         try:
