@@ -48,6 +48,9 @@ def _transform_dataframe(dataframe: pd.DataFrame) -> pd.DataFrame:
     columns_to_round = ['open', 'close', 'high', 'low']
     dataframe[columns_to_round] = dataframe[columns_to_round].round(4)
 
+    # Convert pd.Timestamp to datetime.date
+    dataframe['date'] = dataframe['date'].apply(lambda x: x.date())
+
     return dataframe
 
 
@@ -67,7 +70,7 @@ def _format_ticker_name(stock: str) -> str:
 if __name__ == "__main__":
     event = {
         "stocks": [
-            "PETR4.SA",
+            "PETR3.SA",
             "VALE3.SA"
         ]
     }
