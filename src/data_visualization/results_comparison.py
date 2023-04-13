@@ -12,7 +12,6 @@ import matplotlib.pyplot as plt
 
 from src.shared.loading_engine import PostgresConnector
 
-# TODO x-axis name
 # TODO y-axis name
 # TODO filtered plot, with all 4 variables
 # TODO plot comparison
@@ -37,7 +36,7 @@ def build_figure_dw_all_dates(dataframe) -> None:
     x = dataframe['data_pregao']
     y = dataframe['preco_abertura_pregao']
 
-    fig, ax = plt.subplots()  # figsize goes here
+    fig, ax = plt.subplots(1, 1, figsize=(6, 7))
     ax.plot(x, y, linewidth=2.0, label="Preço abertura pregão")
 
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%b-%Y'))
@@ -46,6 +45,8 @@ def build_figure_dw_all_dates(dataframe) -> None:
 
     plt.grid()
     plt.legend()
+    plt.xlabel("Data do pregão")
+    plt.subplots_adjust(bottom=0.15)
     plt.show()
     # plt.savefig('figures/dw_all_dates.pdf')
 
