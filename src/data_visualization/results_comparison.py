@@ -12,7 +12,6 @@ import matplotlib.pyplot as plt
 
 from src.shared.loading_engine import PostgresConnector
 
-# TODO legend
 # TODO x-axis name
 # TODO y-axis name
 # TODO filtered plot, with all 4 variables
@@ -29,23 +28,24 @@ def lambda_handler():
     dw_query = "SELECT * FROM data_warehouse.petr3"
     dw_dataframe = postgres.read_sql_query(query=dw_query, params={})
 
-    build_figure_all_dates(dataframe=dw_dataframe)
+    build_figure_dw_all_dates(dataframe=dw_dataframe)
     build_figure_filtered_dates(dataframe=dw_dataframe)
 
 
-def build_figure_all_dates(dataframe) -> None:
-    """"""
+def build_figure_dw_all_dates(dataframe) -> None:
+    """Plot all dates within data warehouse results."""
     x = dataframe['data_pregao']
     y = dataframe['preco_abertura_pregao']
 
     fig, ax = plt.subplots()  # figsize goes here
-    ax.plot(x, y, linewidth=2.0)
+    ax.plot(x, y, linewidth=2.0, label="Preço abertura pregão")
 
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%b-%Y'))
     for label in ax.get_xticklabels(which='major'):
         label.set(rotation=30)
 
     plt.grid()
+    plt.legend()
     plt.show()
     # plt.savefig('figures/dw_all_dates.pdf')
 
