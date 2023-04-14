@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 
 from src.shared.loading_engine import PostgresConnector
 
-# TODO y-axis name
+# TODO label size
 # TODO filtered plot, with all 4 variables
 # TODO plot comparison
 
@@ -46,7 +46,8 @@ def build_figure_dw_all_dates(dataframe) -> None:
     plt.grid()
     plt.legend()
     plt.xlabel("Data do pregão")
-    plt.subplots_adjust(bottom=0.15)
+    plt.ylabel("Preço do ativo (CR\$, CZ\$, NCZ\$ ou R\$)")
+    plt.subplots_adjust(left=0.15, bottom=0.15)
     plt.show()
     # plt.savefig('figures/dw_all_dates.pdf')
 
