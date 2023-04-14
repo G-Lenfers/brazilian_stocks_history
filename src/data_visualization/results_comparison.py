@@ -6,6 +6,7 @@ stocks referring to Petrobas. It is essential that data_warehouse app
 and yahoo_finance app have already been run entirely before the execution of this one.
 """
 from datetime import date
+import os
 
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
@@ -18,6 +19,7 @@ from src.shared.loading_engine import PostgresConnector
 
 # # y_query = "SELECT * FROM yahoo_finance.petr4_sa"
 # # y_dataframe = postgres.read_sql_query(query=y_query, params={})
+ROOT_PATH = os.path.abspath(os.path.join(__file__, os.pardir))
 
 
 def lambda_handler():
@@ -48,8 +50,9 @@ def build_figure_dw_all_dates(dataframe) -> None:
     plt.xlabel("Data do pregão")
     plt.ylabel("Preço do ativo (CR\$, CZ\$, NCZ\$ ou R\$)")
     plt.subplots_adjust(left=0.15, bottom=0.15)
-    plt.show()
-    # plt.savefig('figures/dw_all_dates.pdf')
+    plt.tight_layout()
+    # plt.show()
+    plt.savefig(ROOT_PATH + '/figures/dw_all_dates.pdf')
 
 
 def build_figure_filtered_dates(dataframe) -> None:
