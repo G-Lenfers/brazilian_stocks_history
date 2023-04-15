@@ -25,8 +25,13 @@ def lambda_handler():
     dw_query = "SELECT * FROM data_warehouse.petr3"
     dw_dataframe = postgres.read_sql_query(query=dw_query, params={})
 
+    # Get Yahoo Finance data from postgres
+    yahoo_query = "SELECT * FROM yahoo_finance.petr3_sa"
+    yahoo_dataframe = postgres.read_sql_query(query=yahoo_query, params={})
+
     # build_figure_dw_all_dates(dataframe=dw_dataframe)
-    build_figure_filtered_dates(dataframe=dw_dataframe)
+    # build_figure_filtered_dates(dataframe=dw_dataframe)
+    plot_results_comparison(dw_dataframe=dw_dataframe, yahoo_dataframe=yahoo_dataframe)
 
 
 def build_figure_dw_all_dates(dataframe) -> None:
@@ -78,6 +83,37 @@ def build_figure_filtered_dates(dataframe) -> None:
     plt.tight_layout()
     # plt.show()
     plt.savefig(ROOT_PATH + '/figures/filtered_dates.pdf')
+
+
+def plot_results_comparison(dw_dataframe, yahoo_dataframe):
+    """Compare opening prices of PETR3 between data provided by B3 and fetched from Yahoo Finance."""
+    # Yahoo brings values only after 2000-01-01
+    date_filter = dw_dataframe['data_pregao'] >= date(2000, 1, 1)
+
+    # Data Warehouse results
+    x1 = dw_dataframe.loc[date_filter, 'data_pregao']
+    y1 = dw_dataframe.loc[date_filter, 'preco_abertura_pregao']
+
+    # Yahoo Finance data
+    x2 = yahoo_dataframe['date']
+    y2 = yahoo_dataframe['open']
+
+    fig, ax = plt.subplots(1, 1, figsize=(6, 7))
+    ax.plot(x1, y1, linewidth=2.0, label="Preço abertura B3")
+    ax.plot(x2, y2, linewidth=2.0, label="Preço abertura Yahoo Finance")
+
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%b-%Y'))
+    for label in ax.get_xticklabels(which='major'):
+        label.set(rotation=30)
+
+    plt.grid()
+    plt.legend()
+    plt.xlabel("Data do pregão")
+    plt.ylabel("Preço do ativo (R\$)")
+    plt.subplots_adjust(left=0.15, bottom=0.15)
+    plt.tight_layout()
+    # plt.show()
+    plt.savefig(ROOT_PATH + '/figures/comparison.pdf')
 
 
 if __name__ == "__main__":
