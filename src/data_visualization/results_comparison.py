@@ -13,7 +13,6 @@ import matplotlib.pyplot as plt
 
 from src.shared.loading_engine import PostgresConnector
 
-# TODO plot comparison
 
 ROOT_PATH = os.path.abspath(os.path.join(__file__, os.pardir))
 
@@ -29,8 +28,8 @@ def lambda_handler():
     yahoo_query = "SELECT * FROM yahoo_finance.petr3_sa"
     yahoo_dataframe = postgres.read_sql_query(query=yahoo_query, params={})
 
-    # build_figure_dw_all_dates(dataframe=dw_dataframe)
-    # build_figure_filtered_dates(dataframe=dw_dataframe)
+    build_figure_dw_all_dates(dataframe=dw_dataframe)
+    build_figure_filtered_dates(dataframe=dw_dataframe)
     plot_results_comparison(dw_dataframe=dw_dataframe, yahoo_dataframe=yahoo_dataframe)
 
 
@@ -39,7 +38,7 @@ def build_figure_dw_all_dates(dataframe) -> None:
     x = dataframe['data_pregao']
     y = dataframe['preco_abertura_pregao']
 
-    fig, ax = plt.subplots(1, 1, figsize=(6, 7))
+    fig, ax = plt.subplots(1, 1, figsize=(7, 5.5))
     ax.plot(x, y, linewidth=2.0, label="Preço abertura pregão")
 
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%b-%Y'))
@@ -65,7 +64,7 @@ def build_figure_filtered_dates(dataframe) -> None:
     y3 = dataframe.loc[date_filter, 'preco_maximo_pregao']
     y4 = dataframe.loc[date_filter, 'preco_minimo_pregao']
 
-    fig, ax = plt.subplots(1, 1, figsize=(6, 7))
+    fig, ax = plt.subplots(1, 1, figsize=(7, 5.5))
     ax.plot(x, y1, linewidth=2.0, label="Preço abertura pregão")
     ax.plot(x, y2, linewidth=2.0, label="Preço encerramento pregão")
     ax.plot(x, y3, linewidth=2.0, label="Preço máximo pregão")
@@ -98,7 +97,7 @@ def plot_results_comparison(dw_dataframe, yahoo_dataframe):
     x2 = yahoo_dataframe['date']
     y2 = yahoo_dataframe['open']
 
-    fig, ax = plt.subplots(1, 1, figsize=(6, 7))
+    fig, ax = plt.subplots(1, 1, figsize=(7, 5.5))
     ax.plot(x1, y1, linewidth=2.0, label="Preço abertura B3")
     ax.plot(x2, y2, linewidth=2.0, label="Preço abertura Yahoo Finance")
 
