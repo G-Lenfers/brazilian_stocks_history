@@ -69,7 +69,7 @@ class DataWarehouseMainEngine:
                 sh.preco_ultimo_negocio,
                 sh.preco_maximo_pregao,
                 sh.preco_minimo_pregao
-            FROM {self.data_lake_schema}.stocks_history sh 
+            FROM {self.data_lake_schema}.stocks_history sh
             WHERE sh.tipo_de_mercado = '010'
         """
 

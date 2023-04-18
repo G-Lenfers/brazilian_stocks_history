@@ -144,7 +144,7 @@ class PostgresConnector:
             statement = sql.SQL("""
             SELECT EXISTS (
                 SELECT *
-                FROM pg_catalog.pg_matviews pm 
+                FROM pg_catalog.pg_matviews pm
                 WHERE pm.schemaname = {schema_name}
                     AND pm.matviewname = {view_name}
             );
